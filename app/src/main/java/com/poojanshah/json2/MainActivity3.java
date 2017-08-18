@@ -35,7 +35,7 @@ public class MainActivity3 extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private ViewPager mViewPagerTop;
     private ViewPager mViewPagerBottom;
 
     @Override
@@ -50,8 +50,8 @@ public class MainActivity3 extends AppCompatActivity {
         sectionsPagerAdapterBottom = new SectionsPagerAdapterBottom(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(sectionsPagerAdapterTop);
+        mViewPagerTop = (ViewPager) findViewById(R.id.container);
+        mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
         mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
         mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
 
@@ -83,22 +83,22 @@ public class MainActivity3 extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragmentTop extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public PlaceholderFragment() {
+        public PlaceholderFragmentTop() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static PlaceholderFragmentTop newInstance(int sectionNumber) {
+            PlaceholderFragmentTop fragment = new PlaceholderFragmentTop();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -110,7 +110,43 @@ public class MainActivity3 extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            textView.setText(getString(R.string.section_format_top, getArguments().getInt(ARG_SECTION_NUMBER)));
+            return rootView;
+        }
+    }
+
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragmentBottom extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragmentBottom() {
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragmentBottom newInstance(int sectionNumber) {
+            PlaceholderFragmentBottom fragment = new PlaceholderFragmentBottom();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            textView.setText(getString(R.string.section_format_bottom, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }
@@ -130,11 +166,7 @@ public class MainActivity3 extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.i("position", String.valueOf(position));
-            if(position < 3) {
-                return PlaceholderFragment.newInstance(position + 1);
-            } else{
-                return PlaceholderFragment.newInstance(position = 0 );
-            }
+                return PlaceholderFragmentTop.newInstance(position + 1);
         }
 
         @Override
@@ -168,11 +200,8 @@ public class MainActivity3 extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.i("position", String.valueOf(position));
-            if(position < 3) {
-                return PlaceholderFragment.newInstance(position + 1);
-            } else{
-                return PlaceholderFragment.newInstance(position = 0 );
-            }
+                return PlaceholderFragmentBottom.newInstance(position + 1);
+
         }
 
         @Override

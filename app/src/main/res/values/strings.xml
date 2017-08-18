@@ -8,4 +8,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main3">MainActivity3</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="section_format_top">Hello World Top from section: %1$d</string>
+    <string name="section_format_bottom">Hello World Bottom from section: %1$d</string>
 </resources>
