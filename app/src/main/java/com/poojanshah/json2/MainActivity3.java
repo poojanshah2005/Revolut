@@ -25,7 +25,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.poojanshah.json2.MVP.interactor.Interactor;
+import com.poojanshah.json2.MVP.interactor.InteractorImpl;
+import com.poojanshah.json2.model.Rates;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import me.relex.circleindicator.CircleIndicator;
+
+import static com.poojanshah.json2.CURRENCIES.*;
 
 public class MainActivity3 extends AppCompatActivity {
 
@@ -49,10 +57,21 @@ public class MainActivity3 extends AppCompatActivity {
     private static CurrencyVariable currencyVariableTop;
     private static CurrencyVariable currencyVariableBottom;
 
+    private double topRate = 1;
+    private double bottomRate = 1;
+
+    private Rates usdRates;
+    private Rates eurRates;
+    private Rates gbpRates;
+
+    Interactor interactor = new InteractorImpl();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
+
+        setCurrencyRates();
 
 
         // Create the adapter that will return a fragment for each of the three
@@ -64,27 +83,26 @@ public class MainActivity3 extends AppCompatActivity {
         mViewPagerTop = (ViewPager) findViewById(R.id.container);
         mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
 
+        currencyVariableTop = new CurrencyVariable();
+        currencyVariableBottom = new CurrencyVariable();
+
         mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Log.i("onPageScrolled", String.valueOf(position));
 //                Do not place code here
-                PlaceholderFragmentBottom.getTvRate().setText("Rate");
             }
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("onPageSelectedT", String.valueOf(position));
-                Log.i("onPageSelectedB", String.valueOf(CURRENCIES.getCURRENCIES(position)));
-                currencyVariableTop.setCurrency(CURRENCIES.getCURRENCIES(position));
+                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
+                currencyVariableTop.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTop.getCurrency().getValue()));
-                PlaceholderFragmentBottom.getTvRate().setText("Rate");
+                PlaceholderFragmentTop.getEtAmount().setText("0.0");
+                PlaceholderFragmentBottom.getEtAmount().setText("0.0");
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.i("oPSSCT", String.valueOf(state));
-                PlaceholderFragmentBottom.getTvRate().setText("Rate");
             }
         });
 
@@ -97,30 +115,135 @@ public class MainActivity3 extends AppCompatActivity {
         mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Log.i("onPageScrolled", String.valueOf(position));
 //                Do not place code here
             }
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("onPageSelectedB", String.valueOf(position));
-                Log.i("onPageSelectedB", String.valueOf(CURRENCIES.getCURRENCIES(position)));
-                currencyVariableBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
+                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
+                currencyVariableBottom.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableBottom.getCurrency().getValue()));
                 PlaceholderFragmentTop.getEtAmount().setText("0.0");
+                PlaceholderFragmentBottom.getEtAmount().setText("0.0");
+                setTopRate();
+                setBottomRate();
+    
+                Log.i("RateT", String.valueOf(topRate));
+                Log.i("RateB", String.valueOf(bottomRate));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.i("oPSSCB", String.valueOf(state));
             }
         });
 
-        currencyVariableTop = new CurrencyVariable();
-        currencyVariableBottom = new CurrencyVariable();
+
 
         currencyVariableTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
         currencyVariableBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
+    }
+
+    public void setCurrencyRates(){
+        interactor.getGBP()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessGBP, MainActivity3.this::OnError);
+        interactor.getEUR()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessEUR, MainActivity3.this::OnError);
+        interactor.getUSD()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessUSD, MainActivity3.this::OnError);
+    }
+
+    private void onSuccessGBP(Rates rates) {
+        this.gbpRates = rates;
+    }
+
+    private void onSuccessEUR(Rates rates) {
+        this.eurRates = rates;
+    }
+
+    private void onSuccessUSD(Rates rates) {
+        this.usdRates = rates;
+    }
+
+    private void OnError(Throwable throwable) {
+        Log.e("Error",throwable.getMessage());
+    }
+
+    private void setTopRate(){
+        CURRENCIES currencyBottom = currencyVariableBottom.getCurrency();
+        CURRENCIES currencyTop = currencyVariableTop.getCurrency();
+
+        if(currencyTop.equals(currencyBottom)){
+            topRate = 1;
+            return;
+        }
+        Rates rates;
+
+        switch (currencyTop) {
+            case EUR:
+                rates = eurRates;
+                break;
+            case USD:
+                rates = usdRates;
+                break;
+            default:
+                rates = gbpRates;
+
+        }
+
+        switch (currencyBottom) {
+            case EUR:
+                topRate = rates.getRates().getEUR();
+                break;
+            case USD:
+                topRate = rates.getRates().getUSD();
+                break;
+            case GBP:
+                topRate = rates.getRates().getGBP();
+
+        }
+
+    }
+
+    private void setBottomRate(){
+        CURRENCIES currencyBottom = currencyVariableBottom.getCurrency();
+        CURRENCIES currencyTop = currencyVariableTop.getCurrency();
+        if(currencyTop.equals(currencyBottom)){
+            topRate = 1;
+            return;
+        }
+        Rates rates;
+
+        switch (currencyBottom) {
+            case EUR:
+                rates = eurRates;
+                break;
+            case USD:
+                rates = usdRates;
+                break;
+            default:
+                rates = gbpRates;
+
+        }
+
+        switch (currencyTop) {
+            case EUR:
+                bottomRate = rates.getRates().getEUR();
+                break;
+            case USD:
+                bottomRate = rates.getRates().getUSD();
+                break;
+            case GBP:
+                bottomRate = rates.getRates().getGBP();
+
+        }
+
+
     }
 
 
@@ -292,15 +415,14 @@ public class MainActivity3 extends AppCompatActivity {
 
             switch (position) {
                 case 0:
-                    currencyVariableTop.setCurrency(CURRENCIES.GBP);
+                    currencyVariableTop.setCurrency(GBP);
                     break;
                 case 1:
-                    currencyVariableTop.setCurrency(CURRENCIES.EUR);
+                    currencyVariableTop.setCurrency(EUR);
                     break;
                 case 2:
-                    currencyVariableTop.setCurrency(CURRENCIES.USD);
+                    currencyVariableTop.setCurrency(USD);
             }
-            Log.i("position", String.valueOf(position));
                 return PlaceholderFragmentTop.newInstance(currencyVariableTop.getCurrency().toString());
         }
 
@@ -323,16 +445,15 @@ public class MainActivity3 extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    currencyVariableBottom.setCurrency(CURRENCIES.GBP);
+                    currencyVariableBottom.setCurrency(GBP);
                     break;
                 case 1:
-                    currencyVariableBottom.setCurrency(CURRENCIES.EUR);
+                    currencyVariableBottom.setCurrency(EUR);
                     break;
                 case 2:
-                    currencyVariableBottom.setCurrency(CURRENCIES.USD);
+                    currencyVariableBottom.setCurrency(USD);
                     break;
             }
-            Log.i("position", String.valueOf(position));
                 return PlaceholderFragmentBottom.newInstance(currencyVariableBottom.getCurrency().toString());
 
         }

@@ -58,4 +58,9 @@ public class InteractorImpl implements Interactor {
     public Observable<Rates> getGBP() {
         return requestInterface.getGBP();
     }
+
+    @Override
+    public Observable<Rates> get(String symbol) {
+        return requestInterface.get(symbol);
+    }
 }

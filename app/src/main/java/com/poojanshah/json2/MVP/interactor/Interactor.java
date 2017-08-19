@@ -12,4 +12,5 @@ public interface Interactor {
     Observable<Rates> getUSD();
     Observable<Rates> getEUR();
     Observable<Rates> getGBP();
+    Observable<Rates> get(String symbol);
 }

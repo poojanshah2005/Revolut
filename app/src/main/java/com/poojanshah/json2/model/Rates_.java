@@ -47,7 +47,7 @@ public class Rates_ implements Parcelable
     private Double hUF;
     @SerializedName("IDR")
     @Expose
-    private Integer iDR;
+    private Double iDR;
     @SerializedName("ILS")
     @Expose
     private Double iLS;
@@ -59,7 +59,7 @@ public class Rates_ implements Parcelable
     private Double jPY;
     @SerializedName("KRW")
     @Expose
-    private Integer kRW;
+    private Double kRW;
     @SerializedName("MXN")
     @Expose
     private Double mXN;
@@ -125,11 +125,11 @@ public class Rates_ implements Parcelable
             instance.hKD = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.hRK = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.hUF = ((Double) in.readValue((Double.class.getClassLoader())));
-            instance.iDR = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.iDR = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.iLS = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.iNR = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.jPY = ((Double) in.readValue((Double.class.getClassLoader())));
-            instance.kRW = ((Integer) in.readValue((Integer.class.getClassLoader())));
+            instance.kRW = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.mXN = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.mYR = ((Double) in.readValue((Double.class.getClassLoader())));
             instance.nOK = ((Double) in.readValue((Double.class.getClassLoader())));
@@ -251,11 +251,11 @@ public class Rates_ implements Parcelable
         this.hUF = hUF;
     }
 
-    public Integer getIDR() {
+    public Double getIDR() {
         return iDR;
     }
 
-    public void setIDR(Integer iDR) {
+    public void setIDR(Double iDR) {
         this.iDR = iDR;
     }
 
@@ -283,11 +283,11 @@ public class Rates_ implements Parcelable
         this.jPY = jPY;
     }
 
-    public Integer getKRW() {
+    public Double getKRW() {
         return kRW;
     }
 
-    public void setKRW(Integer kRW) {
+    public void setKRW(Double kRW) {
         this.kRW = kRW;
     }
 
