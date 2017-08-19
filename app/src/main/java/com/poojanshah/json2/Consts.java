@@ -6,10 +6,10 @@ package com.poojanshah.json2;
 
 public class Consts {
 
-    public static final String BASE_URL ="http://api.openweathermap.org/data/2.5/";
+    public static final String BASE_URL ="http://api.fixer.io/";
 
-    public static final String CAKELIST_API ="flowers.json";
-
-    public static final String API_KEY ="&appid=eae47062aaf8980bcf5d5914c61e08fd";
+    public static final String USD ="latest?base=USD";
+    public static final String GBP ="latest?base=GBP";
+    public static final String EUR ="latest?base=EUR";
 
 }

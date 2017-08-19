@@ -1,8 +1,6 @@
 package com.poojanshah.json2.MVP.interactor;
 
-import com.poojanshah.json2.model.Flower;
-
-import java.util.List;
+import com.poojanshah.json2.model.Rates;
 
 import io.reactivex.Observable;
 
@@ -11,4 +9,7 @@ import io.reactivex.Observable;
  */
 
 public interface Interactor {
+    Observable<Rates> getUSD();
+    Observable<Rates> getEUR();
+    Observable<Rates> getGBP();
 }

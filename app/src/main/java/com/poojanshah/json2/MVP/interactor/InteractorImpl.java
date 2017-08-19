@@ -3,9 +3,7 @@ package com.poojanshah.json2.MVP.interactor;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.poojanshah.json2.Consts;
 import com.poojanshah.json2.RequestInterface;
-import com.poojanshah.json2.model.Flower;
-
-import java.util.List;
+import com.poojanshah.json2.model.Rates;
 
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -44,5 +42,20 @@ public class InteractorImpl implements Interactor {
 
         requestInterface = retrofit.create(RequestInterface.class);
 //        return retrofit.create(RequestInterface.class);
+    }
+
+    @Override
+    public Observable<Rates> getUSD() {
+        return requestInterface.getUSD();
+    }
+
+    @Override
+    public Observable<Rates> getEUR() {
+        return requestInterface.getEUR();
+    }
+
+    @Override
+    public Observable<Rates> getGBP() {
+        return requestInterface.getGBP();
     }
 }
