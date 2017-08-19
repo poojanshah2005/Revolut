@@ -56,8 +56,28 @@ public class MainActivity3 extends AppCompatActivity {
         mViewPagerTop = (ViewPager) findViewById(R.id.container);
         mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
 
+        mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Log.i("onPageScrolled", String.valueOf(position));
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("onPageSelectedT", String.valueOf(position));
+                Log.i("onPageSelectedTV", String.valueOf(currencyVariableTop.getCurrency().getValue()));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                Log.i("oPSSCT", String.valueOf(state));
+            }
+        });
+
         mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
         mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
+
+
 
 
         mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -68,12 +88,13 @@ public class MainActivity3 extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("onPageSelected", String.valueOf(position));
+                Log.i("onPageSelectedB", String.valueOf(position));
+                Log.i("onPageSelectedBV", String.valueOf(currencyVariableBottom.getCurrency().getValue()));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.i("oPSSC", String.valueOf(state));
+                Log.i("oPSSCB", String.valueOf(state));
             }
         });
 
