@@ -10,13 +10,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity3 extends AppCompatActivity {
@@ -38,8 +42,8 @@ public class MainActivity3 extends AppCompatActivity {
     private ViewPager mViewPagerTop;
     private ViewPager mViewPagerBottom;
 
-    private CurrencyVariable currencyVariableTop;
-    private CurrencyVariable currencyVariableBottom;
+    private static CurrencyVariable currencyVariableTop;
+    private static CurrencyVariable currencyVariableBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,10 +150,10 @@ public class MainActivity3 extends AppCompatActivity {
          * number.
          * @param sectionNumber
          */
-        public static PlaceholderFragmentTop newInstance(CURRENCIES sectionNumber) {
+        public static PlaceholderFragmentTop newInstance(String sectionNumber) {
             PlaceholderFragmentTop fragment = new PlaceholderFragmentTop();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber.getValue());
+            args.putString(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
@@ -158,10 +162,31 @@ public class MainActivity3 extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            TextView tvCurrency = rootView.findViewById(R.id.tvCurrency);
+            TextView tvRate= rootView.findViewById(R.id.tvRate);
+            EditText etAmount = rootView.findViewById(R.id.etAmount);
+            etAmount.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    Log.i("beforeTextChanged", String.valueOf(currencyVariableTop.getCurrency()));
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+
+
+            tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
+
             Bundle args = getArguments();
-//            String value =
-            textView.setText(getString(R.string.section_format_top, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }
@@ -196,8 +221,11 @@ public class MainActivity3 extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format_bottom)  + getArguments().getString(ARG_SECTION_NUMBER));
+            TextView tvCurrency = rootView.findViewById(R.id.tvCurrency);
+            TextView tvRate= rootView.findViewById(R.id.tvRate);
+            EditText etAmount = rootView.findViewById(R.id.etAmount);
+
+            tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             return rootView;
         }
     }
@@ -228,7 +256,7 @@ public class MainActivity3 extends AppCompatActivity {
                     currencyVariableTop.setCurrency(CURRENCIES.USD);
             }
             Log.i("position", String.valueOf(position));
-                return PlaceholderFragmentTop.newInstance(CURRENCIES.USD);
+                return PlaceholderFragmentTop.newInstance(currencyVariableTop.getCurrency().toString());
         }
 
         @Override

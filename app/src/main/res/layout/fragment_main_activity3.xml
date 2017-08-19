@@ -9,8 +9,33 @@
     tools:context="com.poojanshah.json2.MainActivity3$PlaceholderFragment">
 
     <TextView
-        android:id="@+id/section_label"
+        android:id="@+id/tvCurrency"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/section_label"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/tvRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/etAmount"
+        android:layout_alignRight="@+id/etAmount"
+        android:layout_below="@+id/etAmount" />
+
+    <EditText
+        android:id="@+id/etAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:layout_alignBaseline="@+id/tvCurrency"
+        android:layout_alignBottom="@+id/tvCurrency"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
