@@ -40,6 +40,9 @@ import static com.poojanshah.json2.CURRENCIES.getCURRENCIES;
 
 public class MainActivity3 extends AppCompatActivity {
 
+    public final static String TAG = "TAG";
+    public final static String TAG2 = "TAG2";
+    static Context context;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -49,161 +52,23 @@ public class MainActivity3 extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private static SectionsPagerAdapterTop sectionsPagerAdapterTop;
-    private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private static ViewPager mViewPagerTop;
     private static ViewPager mViewPagerBottom;
-
     private static CurrencyVariableType currencyVariableTypeTop;
     private static CurrencyVariableType currencyVariableTypeBottom;
-
     private static double topRate = 1;
     private static double bottomRate = 1;
-
     private static CurrencyAmount currencyAmountTop = new CurrencyAmount();
     private static CurrencyAmount currencyAmountBottom = new CurrencyAmount();
-
-    CurrencyVariableType.ChangeListener listenerBottom;
-
     private static Rates usdRates;
     private static Rates eurRates;
     private static Rates gbpRates;
-
-    public final static String TAG = "TAG";
-    public final static String TAG2 = "TAG2";
-
-    static Context context;
-
+    CurrencyVariableType.ChangeListener listenerBottom;
     Interactor interactor = new InteractorImpl();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
-
-        context = getApplicationContext();
-
-        setCurrencyRates();
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        sectionsPagerAdapterTop = new SectionsPagerAdapterTop(getSupportFragmentManager());
-        sectionsPagerAdapterBottom = new SectionsPagerAdapterBottom(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPagerTop = (ViewPager) findViewById(R.id.container);
-        mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
-
-        currencyAmountTop = new CurrencyAmount();
-        currencyAmountBottom = new CurrencyAmount();
-
-
-        listenerBottom = new CurrencyVariableType.ChangeListener() {
-            @Override
-            public void onChange() {
-
-            }
-        };
-
-        currencyAmountTop.setCurrency(0.0);
-        currencyAmountBottom.setCurrency(0.0);
-
-        currencyVariableTypeTop = new CurrencyVariableType();
-        currencyVariableTypeBottom = new CurrencyVariableType();
-
-        mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Do not place code here
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
-                currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
-                Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
-                currencyAmountTop.setCurrency(0.0);
-                currencyAmountBottom.setCurrency(0.0);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
-        mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
-        mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
-
-        mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Do not place code here
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
-                currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
-                Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
-                currencyAmountTop.setCurrency(0.0);
-                currencyAmountBottom.setCurrency(0.0);
-
-                setTopRate();
-                setBottomRate();
-
-                Log.i("RateT", String.valueOf(topRate));
-                Log.i("RateB", String.valueOf(bottomRate));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
-
-        currencyVariableTypeTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
-        currencyVariableTypeBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
-
-        mViewPagerTop.setCurrentItem(CURRENCIES.EUR.getValue());
-        mViewPagerBottom.setCurrentItem(CURRENCIES.EUR.getValue());
-        currencyVariableTypeTop.setCurrency(CURRENCIES.EUR);
-        currencyVariableTypeBottom.setCurrency(CURRENCIES.EUR);
-
-    }
-
-    public void setCurrencyRates() {
-        interactor.getGBP()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessGBP, MainActivity3.this::OnError);
-        interactor.getEUR()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessEUR, MainActivity3.this::OnError);
-        interactor.getUSD()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessUSD, MainActivity3.this::OnError);
-    }
-
-    private void onSuccessGBP(Rates rates) {
-        this.gbpRates = rates;
-    }
-
-    private void onSuccessEUR(Rates rates) {
-        this.eurRates = rates;
-    }
-
-    private void onSuccessUSD(Rates rates) {
-        this.usdRates = rates;
-    }
-
-    private void OnError(Throwable throwable) {
-        Log.e("Error", throwable.getMessage());
-    }
+    private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
 
     private static void setTopRate() {
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
@@ -273,6 +138,162 @@ public class MainActivity3 extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void updateUITop(Context c) {
+        setBottomRate();
+        double amount = currencyAmountBottom.getCurrency() * topRate;
+        currencyAmountTop.setCurrency(amount);
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG);
+        // You can also include some extra data.
+        intent.putExtra("amount", amount);
+        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void updateUIBottom(Context c) {
+        double amount = currencyAmountTop.getCurrency() * bottomRate;
+        currencyAmountBottom.setCurrency(amount);
+        Log.i("Amount", String.valueOf(amount));
+
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG2);
+        // You can also include some extra data.
+        intent.putExtra("amount", amount);
+        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main3);
+
+        context = getApplicationContext();
+
+        setCurrencyRates();
+
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        sectionsPagerAdapterTop = new SectionsPagerAdapterTop(getSupportFragmentManager());
+        sectionsPagerAdapterBottom = new SectionsPagerAdapterBottom(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPagerTop = (ViewPager) findViewById(R.id.container);
+        mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
+
+        currencyAmountTop = new CurrencyAmount();
+        currencyAmountBottom = new CurrencyAmount();
+
+
+        listenerBottom = new CurrencyVariableType.ChangeListener() {
+            @Override
+            public void onChange() {
+
+            }
+        };
+
+        currencyAmountTop.setCurrency(0.0);
+        currencyAmountBottom.setCurrency(0.0);
+
+        currencyVariableTypeTop = new CurrencyVariableType();
+        currencyVariableTypeBottom = new CurrencyVariableType();
+
+        mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Do not place code here
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
+                currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
+                Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
+                currencyAmountTop.setCurrency(0.0);
+                currencyAmountBottom.setCurrency(0.0);
+                updateUIBottom(getApplicationContext());
+                updateUITop(getApplicationContext());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
+        mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
+
+        mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Do not place code here
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
+                currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
+                Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
+                currencyAmountTop.setCurrency(0.0);
+                currencyAmountBottom.setCurrency(0.0);
+                updateUIBottom(getApplicationContext());
+                updateUITop(getApplicationContext());
+
+                setTopRate();
+                setBottomRate();
+
+                Log.i("RateT", String.valueOf(topRate));
+                Log.i("RateB", String.valueOf(bottomRate));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+
+        currencyVariableTypeTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
+        currencyVariableTypeBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
+
+        mViewPagerTop.setCurrentItem(CURRENCIES.EUR.getValue());
+        mViewPagerBottom.setCurrentItem(CURRENCIES.EUR.getValue());
+        currencyVariableTypeTop.setCurrency(CURRENCIES.EUR);
+        currencyVariableTypeBottom.setCurrency(CURRENCIES.EUR);
+
+    }
+
+    public void setCurrencyRates() {
+        interactor.getGBP()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessGBP, MainActivity3.this::OnError);
+        interactor.getEUR()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessEUR, MainActivity3.this::OnError);
+        interactor.getUSD()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(MainActivity3.this::onSuccessUSD, MainActivity3.this::OnError);
+    }
+
+    private void onSuccessGBP(Rates rates) {
+        this.gbpRates = rates;
+    }
+
+    private void onSuccessEUR(Rates rates) {
+        this.eurRates = rates;
+    }
+
+    private void onSuccessUSD(Rates rates) {
+        this.usdRates = rates;
+    }
+
+    private void OnError(Throwable throwable) {
+        Log.e("Error", throwable.getMessage());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -311,15 +332,15 @@ public class MainActivity3 extends AppCompatActivity {
         CircleIndicator indicator;
         private CurrencyVariableType.ChangeListener listenerTop;
 
+        public PlaceholderFragmentTop() {
+        }
+
         public static TextView getTvRate() {
             return tvRate;
         }
 
         public static EditText getEtAmount() {
             return etAmount;
-        }
-
-        public PlaceholderFragmentTop() {
         }
 
         /**
@@ -338,7 +359,7 @@ public class MainActivity3 extends AppCompatActivity {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         public static void updateEdit(double amount) {
-            etAmount.setText(Math.toIntExact((long) amount));
+            etAmount.setText("" + amount);
         }
 
         @Override
@@ -353,7 +374,7 @@ public class MainActivity3 extends AppCompatActivity {
                     double message = intent.getDoubleExtra("amount", 0);
                     Log.d("receiver", "Got message: " + message);
                     etAmount = view.findViewById(R.id.etAmount);
-                    etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
+                    etAmount.setText("" + message);
                 }
             };
 
@@ -366,6 +387,10 @@ public class MainActivity3 extends AppCompatActivity {
             indicator = view.findViewById(R.id.indicator);
 
             indicator.setViewPager(mViewPagerTop);
+
+
+            etAmount.setText("");
+
 
             currencyAmountTop.setListener(listenerTop);
 
@@ -387,8 +412,7 @@ public class MainActivity3 extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    if (etAmount.getText().hashCode() != editable.hashCode())
-                    {
+                    if (etAmount.getText().hashCode() != editable.hashCode()) {
                         try {
                             double d = Double.parseDouble(editable.toString());
 
@@ -422,32 +446,6 @@ public class MainActivity3 extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void updateUITop(Context c) {
-        setBottomRate();
-        double amount = currencyAmountBottom.getCurrency() * topRate;
-        currencyAmountTop.setCurrency(amount);
-        Log.d("sender", "Broadcasting message");
-        Intent intent = new Intent(TAG);
-        // You can also include some extra data.
-        intent.putExtra("amount", amount);
-        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void updateUIBottom(Context c) {
-        double amount = currencyAmountTop.getCurrency() * bottomRate;
-        currencyAmountBottom.setCurrency(amount);
-        Log.i("Amount", String.valueOf(amount));
-
-        Log.d("sender", "Broadcasting message");
-        Intent intent = new Intent(TAG2);
-        // You can also include some extra data.
-        intent.putExtra("amount", amount);
-        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
-    }
-
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -458,10 +456,13 @@ public class MainActivity3 extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         public static EditText etAmount;
+        public static View view;
         private static TextView tvCurrency;
         private static TextView tvRate;
         CircleIndicator indicator;
-        public static View view;
+
+        public PlaceholderFragmentBottom() {
+        }
 
         public static TextView getTvRate() {
             return tvRate;
@@ -469,10 +470,6 @@ public class MainActivity3 extends AppCompatActivity {
 
         public static EditText getEtAmount() {
             return etAmount;
-        }
-
-
-        public PlaceholderFragmentBottom() {
         }
 
         /**
@@ -515,6 +512,7 @@ public class MainActivity3 extends AppCompatActivity {
             indicator.setViewPager(mViewPagerBottom);
 
 
+            etAmount.setText("");
 
 
             etAmount.addTextChangedListener(new TextWatcher() {
@@ -534,8 +532,7 @@ public class MainActivity3 extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    if (etAmount.getText().hashCode() != editable.hashCode())
-                    {
+                    if (etAmount.getText().hashCode() != editable.hashCode()) {
                         try {
                             double d = Double.parseDouble(editable.toString());
 
@@ -559,7 +556,6 @@ public class MainActivity3 extends AppCompatActivity {
             }, 500);// 0.5 seconds delay
 
 
-
             // Our handler for received Intents. This will be called whenever an Intent
             // with an action named "custom-event-name" is broadcasted.
             BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -567,7 +563,7 @@ public class MainActivity3 extends AppCompatActivity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     // Get extra data included in the Intent
-                    double message = intent.getDoubleExtra("amount",1);
+                    double message = intent.getDoubleExtra("amount", 1);
                     Log.d("receiver", "Got message2: " + message);
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
@@ -581,9 +577,6 @@ public class MainActivity3 extends AppCompatActivity {
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG2));
         }
-
-
-
 
 
     }
@@ -628,6 +621,7 @@ public class MainActivity3 extends AppCompatActivity {
             currencyVariableTypeBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
             currencyAmountTop = new CurrencyAmount();
             currencyAmountBottom = new CurrencyAmount();
+
             return PlaceholderFragmentBottom.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
