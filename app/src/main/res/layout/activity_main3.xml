@@ -8,6 +8,9 @@
     android:fitsSystemWindows="true"
     tools:context="com.poojanshah.json2.MainActivity3">
 
+    <!-- :nextFocusUp and :nextFocusLeft have been set to the id of this component
+to prevent the dummy from receiving focus again -->
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

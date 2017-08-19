@@ -73,6 +73,7 @@ public class MainActivity3 extends AppCompatActivity {
     private static Rates gbpRates;
 
     public final static String TAG = "TAG";
+    public final static String TAG2 = "TAG2";
 
     static Context context;
 
@@ -372,14 +373,6 @@ public class MainActivity3 extends AppCompatActivity {
             // We are registering an observer (mMessageReceiver) to receive Intents
             // with actions named "custom-event-name".
 
-
-            listenerTop = new CurrencyVariableType.ChangeListener() {
-                @Override
-                public void onChange() {
-                    Log.i("update", "update");
-                }
-            };
-
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -389,22 +382,25 @@ public class MainActivity3 extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                    double d = Double.parseDouble(charSequence.toString());
-//                    updateUIBottom(d);
-                    try {
-                        double d = Double.parseDouble(charSequence.toString());
-                        setTopRate();
-                        setBottomRate();
-                        updateUIBottom(d);
-                    } catch (NumberFormatException exc) {
-
-                    }
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
+                    if (etAmount.getText().hashCode() != editable.hashCode())
+                    {
+                        try {
+                            double d = Double.parseDouble(editable.toString());
 
+                            currencyAmountTop.setCurrency(d);
+
+                            setTopRate();
+                            setBottomRate();
+                            updateUIBottom(getContext());
+                        } catch (NumberFormatException exc) {
+
+                        }
+                    }
 
                 }
             });
@@ -429,17 +425,8 @@ public class MainActivity3 extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUITop(Context c) {
         setBottomRate();
-        double amount = currencyAmountBottom.getCurrency() * bottomRate;
-        Log.i("Amount", String.valueOf(amount));
-        Log.i("TOP", String.valueOf(topRate));
-        Log.i("TOPB", currencyVariableTypeTop.getCurrency().toString());
-        Log.i("TopB", currencyVariableTypeBottom.getCurrency().toString());
+        double amount = currencyAmountBottom.getCurrency() * topRate;
         currencyAmountTop.setCurrency(amount);
-//        Fragment fragment = sectionsPagerAdapterTop.getItem(currencyVariableTypeTop.getCurrency().getValue());
-//        Fragment fragment2 = fragment.getFragmentManager().findFragmentById(currencyVariableTypeTop.getCurrency().getValue());
-//        View view = fragment2.getView();
-//        EditText editText = view.findViewById(R.id.etAmount);
-//        PlaceholderFragmentTop.updateEdit(amount);
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(TAG);
         // You can also include some extra data.
@@ -448,10 +435,16 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void updateUIBottom(Double bottom) {
-        double amount = bottom * topRate;
-        Log.i("Amount", String.valueOf(amount));
+    public static void updateUIBottom(Context c) {
+        double amount = currencyAmountTop.getCurrency() * bottomRate;
         currencyAmountBottom.setCurrency(amount);
+        Log.i("Amount", String.valueOf(amount));
+
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG2);
+        // You can also include some extra data.
+        intent.putExtra("amount", amount);
+        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
     }
 
 
@@ -522,6 +515,8 @@ public class MainActivity3 extends AppCompatActivity {
             indicator.setViewPager(mViewPagerBottom);
 
 
+
+
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -533,20 +528,25 @@ public class MainActivity3 extends AppCompatActivity {
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //                    double d = Double.parseDouble(charSequence.toString());
 //                    updateUITop(d);
+
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    try {
-                        double d = Double.parseDouble(editable.toString());
+                    if (etAmount.getText().hashCode() != editable.hashCode())
+                    {
+                        try {
+                            double d = Double.parseDouble(editable.toString());
 
-                        setTopRate();
-                        setBottomRate();
-                        currencyAmountBottom.setCurrency(d);
-                        updateUITop(getContext());
-                    } catch (NumberFormatException exc) {
+                            setTopRate();
+                            setBottomRate();
+                            Log.i("currencyAmountBottom", String.valueOf(d));
+                            currencyAmountBottom.setCurrency(d);
+                            updateUITop(getContext());
+                        } catch (NumberFormatException exc) {
 
+                        }
                     }
                 }
             });
@@ -559,7 +559,33 @@ public class MainActivity3 extends AppCompatActivity {
             }, 500);// 0.5 seconds delay
 
 
+
+            // Our handler for received Intents. This will be called whenever an Intent
+            // with an action named "custom-event-name" is broadcasted.
+            BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Get extra data included in the Intent
+                    double message = intent.getDoubleExtra("amount",1);
+                    Log.d("receiver", "Got message2: " + message);
+                    etAmount = view.findViewById(R.id.etAmount);
+                    etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
+//                    etAmount.setText("200");
+                }
+            };
+
+            // Register to receive messages.
+            // We are registering an observer (mMessageReceiver) to receive Intents
+            // with actions named "custom-event-name".
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
+                    new IntentFilter(TAG2));
         }
+
+
+
+
+
     }
 
     /**
@@ -577,6 +603,8 @@ public class MainActivity3 extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             currencyVariableTypeTop.setCurrency(CURRENCIES.getCURRENCIES(position));
+            currencyAmountTop = new CurrencyAmount();
+            currencyAmountBottom = new CurrencyAmount();
             return PlaceholderFragmentTop.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
@@ -598,6 +626,8 @@ public class MainActivity3 extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             currencyVariableTypeBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
+            currencyAmountTop = new CurrencyAmount();
+            currencyAmountBottom = new CurrencyAmount();
             return PlaceholderFragmentBottom.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
