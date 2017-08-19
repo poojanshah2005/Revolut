@@ -103,6 +103,7 @@ public class MainActivity3 extends AppCompatActivity {
                 Log.i("onPageSelectedB", String.valueOf(CURRENCIES.getCURRENCIES(position)));
                 currencyVariableBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableBottom.getCurrency().getValue()));
+                PlaceholderFragmentTop.getEtAmount().setText("0.0");
             }
 
             @Override
@@ -150,9 +151,11 @@ public class MainActivity3 extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private TextView tvCurrency;
+        public static EditText etAmount;
+        private static TextView tvCurrency;
+        private static TextView tvRate;
 
-        public TextView getTvRate() {
+        public static TextView getTvRate() {
             return tvRate;
         }
 
@@ -160,17 +163,13 @@ public class MainActivity3 extends AppCompatActivity {
             this.tvRate = tvRate;
         }
 
-        private TextView tvRate;
-
-        public EditText getEtAmount() {
+        public static EditText getEtAmount() {
             return etAmount;
         }
 
         public void setEtAmount(EditText etAmount) {
             this.etAmount = etAmount;
         }
-
-        public static EditText etAmount;
 
         public PlaceholderFragmentTop() {
         }
