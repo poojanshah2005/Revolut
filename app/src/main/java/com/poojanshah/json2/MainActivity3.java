@@ -1,6 +1,9 @@
 package com.poojanshah.json2;
 
+import android.content.Context;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -8,6 +11,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,12 +55,20 @@ public class MainActivity3 extends AppCompatActivity {
     private static CurrencyVariableType currencyVariableTypeTop;
     private static CurrencyVariableType currencyVariableTypeBottom;
 
-    private double topRate = 1;
-    private double bottomRate = 1;
+    private static double topRate = 1;
+    private static double bottomRate = 1;
 
-    private Rates usdRates;
-    private Rates eurRates;
-    private Rates gbpRates;
+    private static CurrencyAmount currencyAmountTop = new CurrencyAmount();
+    private static CurrencyAmount currencyAmountBottom = new CurrencyAmount();
+
+    CurrencyVariableType.ChangeListener listenerTop;
+    CurrencyVariableType.ChangeListener listenerBottom;
+
+    private static Rates usdRates;
+    private static Rates eurRates;
+    private static Rates gbpRates;
+
+    static Context context;
 
     Interactor interactor = new InteractorImpl();
 
@@ -64,8 +77,9 @@ public class MainActivity3 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-        setCurrencyRates();
+        context = getApplicationContext();
 
+        setCurrencyRates();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -75,6 +89,25 @@ public class MainActivity3 extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPagerTop = (ViewPager) findViewById(R.id.container);
         mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
+
+        currencyAmountTop = new CurrencyAmount();
+        currencyAmountBottom= new CurrencyAmount();
+
+       listenerTop = new CurrencyVariableType.ChangeListener() {
+           @Override
+           public void onChange() {
+
+           }
+       };
+        listenerBottom = new CurrencyVariableType.ChangeListener() {
+            @Override
+            public void onChange() {
+
+            }
+        };
+
+        currencyAmountTop.setCurrency(0.0);
+        currencyAmountBottom.setCurrency(0.0);
 
         currencyVariableTypeTop = new CurrencyVariableType();
         currencyVariableTypeBottom = new CurrencyVariableType();
@@ -90,8 +123,8 @@ public class MainActivity3 extends AppCompatActivity {
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
-                PlaceholderFragmentTop.getEtAmount().setText("0.0");
-                PlaceholderFragmentBottom.getEtAmount().setText("0.0");
+                currencyAmountTop.setCurrency(0.0);
+                currencyAmountBottom.setCurrency(0.0);
             }
 
             @Override
@@ -101,9 +134,6 @@ public class MainActivity3 extends AppCompatActivity {
 
         mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
         mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
-
-
-
 
         mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -116,7 +146,9 @@ public class MainActivity3 extends AppCompatActivity {
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
-                PlaceholderFragmentTop.getEtAmount().setText("0.0");
+                currencyAmountTop.setCurrency(0.0);
+                currencyAmountBottom.setCurrency(0.0);
+
                 setTopRate();
                 setBottomRate();
 
@@ -166,7 +198,7 @@ public class MainActivity3 extends AppCompatActivity {
         Log.e("Error",throwable.getMessage());
     }
 
-    private void setTopRate(){
+    private static void setTopRate(){
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
 
@@ -202,7 +234,7 @@ public class MainActivity3 extends AppCompatActivity {
 
     }
 
-    private void setBottomRate(){
+    private static void setBottomRate(){
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
         if(currencyTop.equals(currencyBottom)){
@@ -305,6 +337,30 @@ public class MainActivity3 extends AppCompatActivity {
             indicator = view.findViewById(R.id.indicator);
 
             indicator.setViewPager(mViewPagerTop);
+
+            etAmount.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                    double d = Double.parseDouble(charSequence.toString());
+//                    updateUIBottom(d);
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    double d = Double.parseDouble(editable.toString());
+                    setTopRate();
+                    setBottomRate();
+                    updateUIBottom(d);
+
+                }
+            });
         }
 
         @Override
@@ -323,6 +379,20 @@ public class MainActivity3 extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void updateUITop(Double top){
+        currencyAmountTop.setCurrency(top);
+        double amount = top * bottomRate;
+        Log.i("Amount", String.valueOf(amount));
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static void updateUIBottom(Double bottom){
+        currencyAmountBottom.setCurrency(bottom);
+        currencyAmountTop.setCurrency(bottom);
+        double amount = bottom * topRate;
+        Log.i("Amount", String.valueOf(amount));
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.
@@ -337,6 +407,7 @@ public class MainActivity3 extends AppCompatActivity {
         private static TextView tvCurrency;
         private static TextView tvRate;
         CircleIndicator indicator;
+        public static View view;
 
         public static TextView getTvRate() {
             return tvRate;
@@ -365,6 +436,7 @@ public class MainActivity3 extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate= rootView.findViewById(R.id.tvRate);
@@ -373,16 +445,45 @@ public class MainActivity3 extends AppCompatActivity {
             indicator = rootView.findViewById(R.id.indicator);
 
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
+            this.view = rootView;
             return rootView;
         }
 
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+            this.view = view;
             tvCurrency = view.findViewById(R.id.tvCurrency);
             tvRate= view.findViewById(R.id.tvRate);
             etAmount = view.findViewById(R.id.etAmount);
             indicator.setViewPager(mViewPagerBottom);
+
+            etAmount.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                    double d = Double.parseDouble(charSequence.toString());
+//                    updateUITop(d);
+                }
+
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                    double d = Double.parseDouble(editable.toString());
+
+                    setTopRate();
+                    setBottomRate();
+
+                    updateUITop(d);
+
+                }
+            });
         }
     }
 
