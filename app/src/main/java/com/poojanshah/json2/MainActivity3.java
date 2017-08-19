@@ -44,7 +44,7 @@ public class MainActivity3 extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private static ViewPager mViewPagerTop;
-    private ViewPager mViewPagerBottom;
+    private static ViewPager mViewPagerBottom;
 
     private static CurrencyVariable currencyVariableTop;
     private static CurrencyVariable currencyVariableBottom;
@@ -68,7 +68,7 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //                Log.i("onPageScrolled", String.valueOf(position));
-// Do not place code here
+//                Do not place code here
                 PlaceholderFragmentBottom.getTvRate().setText("Rate");
             }
 
@@ -79,7 +79,6 @@ public class MainActivity3 extends AppCompatActivity {
                 currencyVariableTop.setCurrency(CURRENCIES.getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTop.getCurrency().getValue()));
                 PlaceholderFragmentBottom.getTvRate().setText("Rate");
-
             }
 
             @Override
@@ -99,6 +98,7 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //                Log.i("onPageScrolled", String.valueOf(position));
+//                Do not place code here
             }
 
             @Override
@@ -270,8 +270,8 @@ public class MainActivity3 extends AppCompatActivity {
 
 //            private static ViewPager mViewPagerTop;
 //            private ViewPager mViewPagerBottom;
-            
-            indicator.setViewPager(mViewPagerTop);
+
+            indicator.setViewPager(mViewPagerBottom);
         }
     }
 
