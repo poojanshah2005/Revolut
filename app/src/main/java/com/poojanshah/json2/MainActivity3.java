@@ -38,6 +38,9 @@ public class MainActivity3 extends AppCompatActivity {
     private ViewPager mViewPagerTop;
     private ViewPager mViewPagerBottom;
 
+    private CurrencyVariable currencyVariableTop;
+    private CurrencyVariable currencyVariableBottom;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +55,33 @@ public class MainActivity3 extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPagerTop = (ViewPager) findViewById(R.id.container);
         mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
+
         mViewPagerBottom = (ViewPager) findViewById(R.id.containerBottom);
         mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
 
+
+        mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.i("onPageScrolled", String.valueOf(position));
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("onPageSelected", String.valueOf(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                Log.i("oPSSC", String.valueOf(state));
+            }
+        });
+
+        currencyVariableTop = new CurrencyVariable();
+        currencyVariableBottom = new CurrencyVariable();
+
+        currencyVariableTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
+        currencyVariableBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
     }
 
 
@@ -96,11 +123,12 @@ public class MainActivity3 extends AppCompatActivity {
         /**
          * Returns a new instance of this fragment for the given section
          * number.
+         * @param sectionNumber
          */
-        public static PlaceholderFragmentTop newInstance(int sectionNumber) {
+        public static PlaceholderFragmentTop newInstance(CURRENCIES sectionNumber) {
             PlaceholderFragmentTop fragment = new PlaceholderFragmentTop();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber.getValue());
             fragment.setArguments(args);
             return fragment;
         }
@@ -110,6 +138,8 @@ public class MainActivity3 extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            Bundle args = getArguments();
+//            String value =
             textView.setText(getString(R.string.section_format_top, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
@@ -133,10 +163,10 @@ public class MainActivity3 extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragmentBottom newInstance(int sectionNumber) {
+        public static PlaceholderFragmentBottom newInstance(String sectionNumber) {
             PlaceholderFragmentBottom fragment = new PlaceholderFragmentBottom();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
@@ -146,7 +176,7 @@ public class MainActivity3 extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format_bottom, getArguments().getInt(ARG_SECTION_NUMBER)));
+            textView.setText(getString(R.string.section_format_bottom)  + getArguments().getString(ARG_SECTION_NUMBER));
             return rootView;
         }
     }
@@ -165,8 +195,19 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+
+            switch (position) {
+                case 0:
+                    currencyVariableTop.setCurrency(CURRENCIES.GBP);
+                    break;
+                case 1:
+                    currencyVariableTop.setCurrency(CURRENCIES.EUR);
+                    break;
+                case 2:
+                    currencyVariableTop.setCurrency(CURRENCIES.USD);
+            }
             Log.i("position", String.valueOf(position));
-                return PlaceholderFragmentTop.newInstance(position + 1);
+                return PlaceholderFragmentTop.newInstance(CURRENCIES.USD);
         }
 
         @Override
@@ -179,11 +220,14 @@ public class MainActivity3 extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    currencyVariableTop.setCurrency(CURRENCIES.GBP);
+                    return "GBP";
                 case 1:
-                    return "SECTION 2";
+                    currencyVariableTop.setCurrency(CURRENCIES.EUR);
+                    return "EUR";
                 case 2:
-                    return "SECTION 3";
+                    currencyVariableTop.setCurrency(CURRENCIES.USD);
+                    return "USD";
             }
             return null;
         }
@@ -199,8 +243,19 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            switch (position) {
+                case 0:
+                    currencyVariableBottom.setCurrency(CURRENCIES.GBP);
+                    break;
+                case 1:
+                    currencyVariableBottom.setCurrency(CURRENCIES.EUR);
+                    break;
+                case 2:
+                    currencyVariableBottom.setCurrency(CURRENCIES.USD);
+                    break;
+            }
             Log.i("position", String.valueOf(position));
-                return PlaceholderFragmentBottom.newInstance(position + 1);
+                return PlaceholderFragmentBottom.newInstance(currencyVariableBottom.getCurrency().toString());
 
         }
 
@@ -214,11 +269,14 @@ public class MainActivity3 extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    currencyVariableBottom.setCurrency(CURRENCIES.GBP);
+                    return "GBP";
                 case 1:
-                    return "SECTION 2";
+                    currencyVariableBottom.setCurrency(CURRENCIES.EUR);
+                    return "EUR";
                 case 2:
-                    return "SECTION 3";
+                    currencyVariableBottom.setCurrency(CURRENCIES.USD);
+                    return "USD";
             }
             return null;
         }
