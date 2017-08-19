@@ -31,9 +31,15 @@ import com.poojanshah.json2.model.Rates;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.Timed;
 import me.relex.circleindicator.CircleIndicator;
 
 import static com.poojanshah.json2.CURRENCIES.getCURRENCIES;
@@ -262,6 +268,24 @@ public class MainActivity3 extends AppCompatActivity {
         currencyVariableTypeTop.setCurrency(CURRENCIES.EUR);
         currencyVariableTypeBottom.setCurrency(CURRENCIES.EUR);
 
+        Disposable timer = Observable.interval(30000, TimeUnit.MILLISECONDS)
+                .timeInterval()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Timed<Long>>() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void accept(@NonNull Timed<Long> longTimed) throws Exception {
+                        //your code here.
+                        setCurrencyRates();
+                        Log.i("setCurrencyRates","setCurrencyRates");
+                        setTopRate();
+                        setBottomRate();
+                        updateUITop(getApplicationContext());
+                        updateUIBottom(getApplicationContext());
+                    }
+                });
+
     }
 
     public void setCurrencyRates() {
@@ -422,7 +446,7 @@ public class MainActivity3 extends AppCompatActivity {
                             setBottomRate();
                             updateUIBottom(getContext());
                         } catch (NumberFormatException exc) {
-
+                            Log.e("Error",exc.getMessage());
                         }
                     }
 
