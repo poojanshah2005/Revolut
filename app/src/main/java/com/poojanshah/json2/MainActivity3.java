@@ -240,7 +240,7 @@ public class MainActivity3 extends AppCompatActivity {
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
         if(currencyTop.equals(currencyBottom)){
-            topRate = 1;
+            bottomRate = 1;
             return;
         }
         Rates rates;
@@ -426,8 +426,12 @@ public class MainActivity3 extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUITop(Context c, Double top){
+        setBottomRate();
         double amount = top * bottomRate;
         Log.i("Amount", String.valueOf(amount));
+        Log.i("TOP", String.valueOf(topRate));
+        Log.i("TOPB", currencyVariableTypeTop.getCurrency().toString());
+        Log.i("TopB", currencyVariableTypeBottom.getCurrency().toString());
         currencyAmountTop.setCurrency(amount);
 //        Fragment fragment = sectionsPagerAdapterTop.getItem(currencyVariableTypeTop.getCurrency().getValue());
 //        Fragment fragment2 = fragment.getFragmentManager().findFragmentById(currencyVariableTypeTop.getCurrency().getValue());
