@@ -1,14 +1,16 @@
 package com.poojanshah.json2;
 
+import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +24,8 @@ import android.view.ViewGroup;
 
 import android.widget.EditText;
 import android.widget.TextView;
+
+import me.relex.circleindicator.CircleIndicator;
 
 public class MainActivity3 extends AppCompatActivity {
 
@@ -154,21 +158,14 @@ public class MainActivity3 extends AppCompatActivity {
         public static EditText etAmount;
         private static TextView tvCurrency;
         private static TextView tvRate;
+        CircleIndicator indicator;
 
         public static TextView getTvRate() {
             return tvRate;
         }
 
-        public void setTvRate(TextView tvRate) {
-            this.tvRate = tvRate;
-        }
-
         public static EditText getEtAmount() {
             return etAmount;
-        }
-
-        public void setEtAmount(EditText etAmount) {
-            this.etAmount = etAmount;
         }
 
         public PlaceholderFragmentTop() {
@@ -188,32 +185,26 @@ public class MainActivity3 extends AppCompatActivity {
         }
 
         @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+
+//            private static ViewPager mViewPagerTop;
+//            private ViewPager mViewPagerBottom;
+
+
+            indicator.setViewPager(mViewPagerTop);
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate= rootView.findViewById(R.id.tvRate);
             etAmount = rootView.findViewById(R.id.etAmount);
-            etAmount.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    Log.i("beforeTextChanged", String.valueOf(currencyVariableTop.getCurrency()));
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
+
+            indicator = rootView.findViewById(R.id.indicator);
 
             Bundle args = getArguments();
             return rootView;
@@ -230,27 +221,18 @@ public class MainActivity3 extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        public static EditText etAmount;
         private static TextView tvCurrency;
+        private static TextView tvRate;
+        CircleIndicator indicator;
 
         public static TextView getTvRate() {
             return tvRate;
         }
 
-        public void setTvRate(TextView tvRate) {
-            this.tvRate = tvRate;
-        }
-
-        private static TextView tvRate;
-
-        public EditText getEtAmount() {
+        public static EditText getEtAmount() {
             return etAmount;
         }
-
-        public void setEtAmount(EditText etAmount) {
-            this.etAmount = etAmount;
-        }
-
-        public static EditText etAmount;
 
 
         public PlaceholderFragmentBottom() {
@@ -276,26 +258,20 @@ public class MainActivity3 extends AppCompatActivity {
             tvRate= rootView.findViewById(R.id.tvRate);
             etAmount = rootView.findViewById(R.id.etAmount);
 
-
-            etAmount.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    PlaceholderFragmentTop.etAmount.setText("1.0");
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    PlaceholderFragmentTop.etAmount.setText("1.0");
-                }
-            });
+            indicator = rootView.findViewById(R.id.indicator);
 
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+
+//            private static ViewPager mViewPagerTop;
+//            private ViewPager mViewPagerBottom;
+            
+            indicator.setViewPager(mViewPagerTop);
         }
     }
 

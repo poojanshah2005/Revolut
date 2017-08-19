@@ -49,4 +49,5 @@ dependencies {
     compile 'com.github.pwittchen:reactivenetwork-rx2:0.9.1'
     compile 'com.android.support:design:26.+'
     testCompile 'junit:junit:4.12'
+    compile 'me.relex:circleindicator:1.2.2@aar'
 }
