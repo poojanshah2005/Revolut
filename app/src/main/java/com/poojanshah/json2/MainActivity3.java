@@ -1,21 +1,14 @@
 package com.poojanshah.json2;
 
-import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,8 +47,8 @@ public class MainActivity3 extends AppCompatActivity {
     private static ViewPager mViewPagerTop;
     private static ViewPager mViewPagerBottom;
 
-    private static CurrencyVariable currencyVariableTop;
-    private static CurrencyVariable currencyVariableBottom;
+    private static CurrencyVariableType currencyVariableTypeTop;
+    private static CurrencyVariableType currencyVariableTypeBottom;
 
     private double topRate = 1;
     private double bottomRate = 1;
@@ -83,8 +76,8 @@ public class MainActivity3 extends AppCompatActivity {
         mViewPagerTop = (ViewPager) findViewById(R.id.container);
         mViewPagerTop.setAdapter(sectionsPagerAdapterTop);
 
-        currencyVariableTop = new CurrencyVariable();
-        currencyVariableBottom = new CurrencyVariable();
+        currencyVariableTypeTop = new CurrencyVariableType();
+        currencyVariableTypeBottom = new CurrencyVariableType();
 
         mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -95,8 +88,8 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
-                currencyVariableTop.setCurrency(getCURRENCIES(position));
-                Log.i("onPageSelectedTV", String.valueOf(currencyVariableTop.getCurrency().getValue()));
+                currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
+                Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
                 PlaceholderFragmentTop.getEtAmount().setText("0.0");
                 PlaceholderFragmentBottom.getEtAmount().setText("0.0");
             }
@@ -121,13 +114,12 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
-                currencyVariableBottom.setCurrency(getCURRENCIES(position));
-                Log.i("onPageSelectedBV", String.valueOf(currencyVariableBottom.getCurrency().getValue()));
+                currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
+                Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
                 PlaceholderFragmentTop.getEtAmount().setText("0.0");
-                PlaceholderFragmentBottom.getEtAmount().setText("0.0");
                 setTopRate();
                 setBottomRate();
-    
+
                 Log.i("RateT", String.valueOf(topRate));
                 Log.i("RateB", String.valueOf(bottomRate));
             }
@@ -139,8 +131,8 @@ public class MainActivity3 extends AppCompatActivity {
 
 
 
-        currencyVariableTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
-        currencyVariableBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTop.getCurrency())));
+        currencyVariableTypeTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
+        currencyVariableTypeBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
     }
 
     public void setCurrencyRates(){
@@ -175,8 +167,8 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void setTopRate(){
-        CURRENCIES currencyBottom = currencyVariableBottom.getCurrency();
-        CURRENCIES currencyTop = currencyVariableTop.getCurrency();
+        CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
+        CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
 
         if(currencyTop.equals(currencyBottom)){
             topRate = 1;
@@ -211,8 +203,8 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void setBottomRate(){
-        CURRENCIES currencyBottom = currencyVariableBottom.getCurrency();
-        CURRENCIES currencyTop = currencyVariableTop.getCurrency();
+        CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
+        CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
         if(currencyTop.equals(currencyBottom)){
             topRate = 1;
             return;
@@ -228,7 +220,6 @@ public class MainActivity3 extends AppCompatActivity {
                 break;
             default:
                 rates = gbpRates;
-
         }
 
         switch (currencyTop) {
@@ -240,10 +231,7 @@ public class MainActivity3 extends AppCompatActivity {
                 break;
             case GBP:
                 bottomRate = rates.getRates().getGBP();
-
         }
-
-
     }
 
 
@@ -311,9 +299,10 @@ public class MainActivity3 extends AppCompatActivity {
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-//            private static ViewPager mViewPagerTop;
-//            private ViewPager mViewPagerBottom;
-
+            tvCurrency = view.findViewById(R.id.tvCurrency);
+            tvRate= view.findViewById(R.id.tvRate);
+            etAmount = view.findViewById(R.id.etAmount);
+            indicator = view.findViewById(R.id.indicator);
 
             indicator.setViewPager(mViewPagerTop);
         }
@@ -390,10 +379,9 @@ public class MainActivity3 extends AppCompatActivity {
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
-//            private static ViewPager mViewPagerTop;
-//            private ViewPager mViewPagerBottom;
-
+            tvCurrency = view.findViewById(R.id.tvCurrency);
+            tvRate= view.findViewById(R.id.tvRate);
+            etAmount = view.findViewById(R.id.etAmount);
             indicator.setViewPager(mViewPagerBottom);
         }
     }
@@ -412,24 +400,14 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-
-            switch (position) {
-                case 0:
-                    currencyVariableTop.setCurrency(GBP);
-                    break;
-                case 1:
-                    currencyVariableTop.setCurrency(EUR);
-                    break;
-                case 2:
-                    currencyVariableTop.setCurrency(USD);
-            }
-                return PlaceholderFragmentTop.newInstance(currencyVariableTop.getCurrency().toString());
+            currencyVariableTypeTop.setCurrency(CURRENCIES.getCURRENCIES(position));
+                return PlaceholderFragmentTop.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return CURRENCIES.values().length;
         }
     }
 
@@ -443,25 +421,14 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    currencyVariableBottom.setCurrency(GBP);
-                    break;
-                case 1:
-                    currencyVariableBottom.setCurrency(EUR);
-                    break;
-                case 2:
-                    currencyVariableBottom.setCurrency(USD);
-                    break;
-            }
-                return PlaceholderFragmentBottom.newInstance(currencyVariableBottom.getCurrency().toString());
-
+                    currencyVariableTypeBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
+                return PlaceholderFragmentBottom.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return CURRENCIES.values().length;
         }
     }
 }

@@ -3,7 +3,7 @@ package com.poojanshah.json2;
 /**
  * Created by shahp on 18/08/2017.
  */
-public class CurrencyVariable {
+public class CurrencyVariableType {
     private CURRENCIES currency = CURRENCIES.EUR;
     private ChangeListener listener;
 
