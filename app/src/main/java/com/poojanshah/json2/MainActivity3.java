@@ -1,9 +1,14 @@
 package com.poojanshah.json2;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -43,7 +48,7 @@ public class MainActivity3 extends AppCompatActivity {
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapterTop sectionsPagerAdapterTop;
+    private static SectionsPagerAdapterTop sectionsPagerAdapterTop;
     private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
 
     /**
@@ -61,12 +66,13 @@ public class MainActivity3 extends AppCompatActivity {
     private static CurrencyAmount currencyAmountTop = new CurrencyAmount();
     private static CurrencyAmount currencyAmountBottom = new CurrencyAmount();
 
-    CurrencyVariableType.ChangeListener listenerTop;
     CurrencyVariableType.ChangeListener listenerBottom;
 
     private static Rates usdRates;
     private static Rates eurRates;
     private static Rates gbpRates;
+
+    public final static String TAG = "TAG";
 
     static Context context;
 
@@ -78,6 +84,7 @@ public class MainActivity3 extends AppCompatActivity {
         setContentView(R.layout.activity_main3);
 
         context = getApplicationContext();
+
 
         setCurrencyRates();
 
@@ -93,12 +100,7 @@ public class MainActivity3 extends AppCompatActivity {
         currencyAmountTop = new CurrencyAmount();
         currencyAmountBottom= new CurrencyAmount();
 
-       listenerTop = new CurrencyVariableType.ChangeListener() {
-           @Override
-           public void onChange() {
 
-           }
-       };
         listenerBottom = new CurrencyVariableType.ChangeListener() {
             @Override
             public void onChange() {
@@ -302,6 +304,7 @@ public class MainActivity3 extends AppCompatActivity {
         private static TextView tvCurrency;
         private static TextView tvRate;
         CircleIndicator indicator;
+        private CurrencyVariableType.ChangeListener listenerTop;
 
         public static TextView getTvRate() {
             return tvRate;
@@ -327,9 +330,29 @@ public class MainActivity3 extends AppCompatActivity {
             return fragment;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        public static void updateEdit(double amount){
+            etAmount.setText(Math.toIntExact((long) amount));
+        }
+
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
+            BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Get extra data included in the Intent
+                    double message = intent.getDoubleExtra("amount",0);
+                    Log.d("receiver", "Got message: " + message);
+                    etAmount = view.findViewById(R.id.etAmount);
+                    etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
+                }
+            };
+
+            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
+                    new IntentFilter(TAG));
 
             tvCurrency = view.findViewById(R.id.tvCurrency);
             tvRate= view.findViewById(R.id.tvRate);
@@ -337,6 +360,23 @@ public class MainActivity3 extends AppCompatActivity {
             indicator = view.findViewById(R.id.indicator);
 
             indicator.setViewPager(mViewPagerTop);
+
+            currencyAmountTop.setListener(listenerTop);
+
+            // Register to receive messages.
+            // We are registering an observer (mMessageReceiver) to receive Intents
+            // with actions named "custom-event-name".
+
+
+
+
+
+            listenerTop = new CurrencyVariableType.ChangeListener() {
+                @Override
+                public void onChange() {
+                    Log.i("update","update");
+                }
+            };
 
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -349,15 +389,20 @@ public class MainActivity3 extends AppCompatActivity {
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 //                    double d = Double.parseDouble(charSequence.toString());
 //                    updateUIBottom(d);
+                    try {
+                        double d = Double.parseDouble(charSequence.toString());
+                        setTopRate();
+                        setBottomRate();
+                        updateUIBottom(d);
+                    } catch (NumberFormatException exc){
+
+                    }
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    double d = Double.parseDouble(editable.toString());
-                    setTopRate();
-                    setBottomRate();
-                    updateUIBottom(d);
+
 
                 }
             });
@@ -369,7 +414,7 @@ public class MainActivity3 extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate= rootView.findViewById(R.id.tvRate);
-            etAmount = rootView.findViewById(R.id.etAmount);
+//            etAmount = rootView.findViewById(R.id.etAmount);
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
 
             indicator = rootView.findViewById(R.id.indicator);
@@ -380,17 +425,26 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void updateUITop(Double top){
-        currencyAmountTop.setCurrency(top);
+    public static void updateUITop(Context c, Double top){
         double amount = top * bottomRate;
         Log.i("Amount", String.valueOf(amount));
+        currencyAmountTop.setCurrency(amount);
+//        Fragment fragment = sectionsPagerAdapterTop.getItem(currencyVariableTypeTop.getCurrency().getValue());
+//        Fragment fragment2 = fragment.getFragmentManager().findFragmentById(currencyVariableTypeTop.getCurrency().getValue());
+//        View view = fragment2.getView();
+//        EditText editText = view.findViewById(R.id.etAmount);
+//        PlaceholderFragmentTop.updateEdit(amount);
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG);
+        // You can also include some extra data.
+        intent.putExtra("amount", amount);
+        LocalBroadcastManager.getInstance(c).sendBroadcast(intent);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUIBottom(Double bottom){
-        currencyAmountBottom.setCurrency(bottom);
-        currencyAmountTop.setCurrency(bottom);
         double amount = bottom * topRate;
         Log.i("Amount", String.valueOf(amount));
+        currencyAmountBottom.setCurrency(amount);
     }
 
 
@@ -474,14 +528,16 @@ public class MainActivity3 extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void afterTextChanged(Editable editable) {
+                    try {
+                        double d = Double.parseDouble(editable.toString());
 
-                    double d = Double.parseDouble(editable.toString());
+                        setTopRate();
+                        setBottomRate();
 
-                    setTopRate();
-                    setBottomRate();
+                        updateUITop(getContext(), d);
+                    }catch (NumberFormatException exc){
 
-                    updateUITop(d);
-
+                    }
                 }
             });
         }

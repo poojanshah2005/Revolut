@@ -24,7 +24,7 @@ public class CurrencyVariableType {
         this.listener = listener;
     }
 
-    public interface ChangeListener {
+    public interface ChangeListener extends CurrencyAmount.ChangeListener {
         void onChange();
     }
 }
