@@ -5,9 +5,9 @@ package com.poojanshah.json2;
  */
 
 public enum CURRENCIES {
-    EUR(1),
-    USD(2),
-    GBP(3);
+    EUR(0),
+    USD(1),
+    GBP(2);
 
     private final int value;
 
@@ -16,4 +16,13 @@ public enum CURRENCIES {
     }
 
     public int getValue() { return value; }
+
+
+
+    public static CURRENCIES getCURRENCIES(int legIndex) {
+        for (CURRENCIES l : CURRENCIES.values()) {
+            if (l.value == legIndex) return l;
+        }
+        throw new IllegalArgumentException("CURRENCY not found. Amputated?");
+    }
 }

@@ -39,7 +39,7 @@ public class MainActivity3 extends AppCompatActivity {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPagerTop;
+    private static ViewPager mViewPagerTop;
     private ViewPager mViewPagerBottom;
 
     private static CurrencyVariable currencyVariableTop;
@@ -64,17 +64,24 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //                Log.i("onPageScrolled", String.valueOf(position));
+// Do not place code here
+                PlaceholderFragmentBottom.getTvRate().setText("Rate");
             }
 
             @Override
             public void onPageSelected(int position) {
                 Log.i("onPageSelectedT", String.valueOf(position));
+                Log.i("onPageSelectedB", String.valueOf(CURRENCIES.getCURRENCIES(position)));
+                currencyVariableTop.setCurrency(CURRENCIES.getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTop.getCurrency().getValue()));
+                PlaceholderFragmentBottom.getTvRate().setText("Rate");
+
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
                 Log.i("oPSSCT", String.valueOf(state));
+                PlaceholderFragmentBottom.getTvRate().setText("Rate");
             }
         });
 
@@ -93,6 +100,8 @@ public class MainActivity3 extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.i("onPageSelectedB", String.valueOf(position));
+                Log.i("onPageSelectedB", String.valueOf(CURRENCIES.getCURRENCIES(position)));
+                currencyVariableBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableBottom.getCurrency().getValue()));
             }
 
@@ -141,6 +150,27 @@ public class MainActivity3 extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private TextView tvCurrency;
+
+        public TextView getTvRate() {
+            return tvRate;
+        }
+
+        public void setTvRate(TextView tvRate) {
+            this.tvRate = tvRate;
+        }
+
+        private TextView tvRate;
+
+        public EditText getEtAmount() {
+            return etAmount;
+        }
+
+        public void setEtAmount(EditText etAmount) {
+            this.etAmount = etAmount;
+        }
+
+        public static EditText etAmount;
 
         public PlaceholderFragmentTop() {
         }
@@ -162,9 +192,9 @@ public class MainActivity3 extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
-            TextView tvCurrency = rootView.findViewById(R.id.tvCurrency);
-            TextView tvRate= rootView.findViewById(R.id.tvRate);
-            EditText etAmount = rootView.findViewById(R.id.etAmount);
+            tvCurrency = rootView.findViewById(R.id.tvCurrency);
+            tvRate= rootView.findViewById(R.id.tvRate);
+            etAmount = rootView.findViewById(R.id.etAmount);
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -201,6 +231,28 @@ public class MainActivity3 extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static TextView tvCurrency;
+
+        public static TextView getTvRate() {
+            return tvRate;
+        }
+
+        public void setTvRate(TextView tvRate) {
+            this.tvRate = tvRate;
+        }
+
+        private static TextView tvRate;
+
+        public EditText getEtAmount() {
+            return etAmount;
+        }
+
+        public void setEtAmount(EditText etAmount) {
+            this.etAmount = etAmount;
+        }
+
+        public static EditText etAmount;
+
 
         public PlaceholderFragmentBottom() {
         }
@@ -221,9 +273,27 @@ public class MainActivity3 extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
-            TextView tvCurrency = rootView.findViewById(R.id.tvCurrency);
-            TextView tvRate= rootView.findViewById(R.id.tvRate);
-            EditText etAmount = rootView.findViewById(R.id.etAmount);
+            tvCurrency = rootView.findViewById(R.id.tvCurrency);
+            tvRate= rootView.findViewById(R.id.tvRate);
+            etAmount = rootView.findViewById(R.id.etAmount);
+
+
+            etAmount.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    PlaceholderFragmentTop.etAmount.setText("1.0");
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    PlaceholderFragmentTop.etAmount.setText("1.0");
+                }
+            });
 
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             return rootView;
@@ -264,22 +334,6 @@ public class MainActivity3 extends AppCompatActivity {
             // Show 3 total pages.
             return 3;
         }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    currencyVariableTop.setCurrency(CURRENCIES.GBP);
-                    return "GBP";
-                case 1:
-                    currencyVariableTop.setCurrency(CURRENCIES.EUR);
-                    return "EUR";
-                case 2:
-                    currencyVariableTop.setCurrency(CURRENCIES.USD);
-                    return "USD";
-            }
-            return null;
-        }
     }
 
     public class SectionsPagerAdapterBottom extends FragmentPagerAdapter {
@@ -312,22 +366,6 @@ public class MainActivity3 extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    currencyVariableBottom.setCurrency(CURRENCIES.GBP);
-                    return "GBP";
-                case 1:
-                    currencyVariableBottom.setCurrency(CURRENCIES.EUR);
-                    return "EUR";
-                case 2:
-                    currencyVariableBottom.setCurrency(CURRENCIES.USD);
-                    return "USD";
-            }
-            return null;
         }
     }
 }
