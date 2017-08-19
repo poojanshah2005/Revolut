@@ -32,6 +32,9 @@ import com.poojanshah.json2.MVP.interactor.Interactor;
 import com.poojanshah.json2.MVP.interactor.InteractorImpl;
 import com.poojanshah.json2.model.Rates;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.relex.circleindicator.CircleIndicator;
@@ -84,7 +87,6 @@ public class MainActivity3 extends AppCompatActivity {
         setContentView(R.layout.activity_main3);
 
         context = getApplicationContext();
-
 
         setCurrencyRates();
 
@@ -167,6 +169,12 @@ public class MainActivity3 extends AppCompatActivity {
 
         currencyVariableTypeTop.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
         currencyVariableTypeBottom.setListener(() -> Log.i("OnChange", String.valueOf(currencyVariableTypeTop.getCurrency())));
+
+        mViewPagerTop.setCurrentItem(CURRENCIES.EUR.getValue());
+        mViewPagerBottom.setCurrentItem(CURRENCIES.EUR.getValue());
+        currencyVariableTypeTop.setCurrency(CURRENCIES.EUR);
+        currencyVariableTypeBottom.setCurrency(CURRENCIES.EUR);
+
     }
 
     public void setCurrencyRates(){
@@ -425,9 +433,9 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void updateUITop(Context c, Double top){
+    public static void updateUITop(Context c){
         setBottomRate();
-        double amount = top * bottomRate;
+        double amount = currencyAmountBottom.getCurrency() * bottomRate;
         Log.i("Amount", String.valueOf(amount));
         Log.i("TOP", String.valueOf(topRate));
         Log.i("TOPB", currencyVariableTypeTop.getCurrency().toString());
@@ -507,6 +515,8 @@ public class MainActivity3 extends AppCompatActivity {
             return rootView;
         }
 
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
@@ -515,6 +525,8 @@ public class MainActivity3 extends AppCompatActivity {
             tvRate= view.findViewById(R.id.tvRate);
             etAmount = view.findViewById(R.id.etAmount);
             indicator.setViewPager(mViewPagerBottom);
+
+
 
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -537,13 +549,22 @@ public class MainActivity3 extends AppCompatActivity {
 
                         setTopRate();
                         setBottomRate();
-
-                        updateUITop(getContext(), d);
+                        currencyAmountBottom.setCurrency(d);
+                        updateUITop(getContext());
                     }catch (NumberFormatException exc){
 
                     }
                 }
             });
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    updateUITop(getContext());
+                }
+            }, 500 );// 0.5 seconds delay
+
+
         }
     }
 
