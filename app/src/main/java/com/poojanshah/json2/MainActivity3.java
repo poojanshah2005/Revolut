@@ -60,10 +60,10 @@ public class MainActivity3 extends AppCompatActivity {
         mViewPagerBottom.setAdapter(sectionsPagerAdapterBottom);
 
 
-        mViewPagerTop.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPagerBottom.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.i("onPageScrolled", String.valueOf(position));
+//                Log.i("onPageScrolled", String.valueOf(position));
             }
 
             @Override
