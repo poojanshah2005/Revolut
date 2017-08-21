@@ -435,7 +435,7 @@ public class MainActivity3 extends AppCompatActivity {
                     // Get extra data included in the Intent
                     double message = intent.getDoubleExtra("amount", 0);
                     etAmount = view.findViewById(R.id.etAmount);
-                    etAmount.setText("" + message);
+                    etAmount.setText(String.format("%.2f", message));
                     updateRate();
                 }
             };
@@ -645,7 +645,7 @@ public class MainActivity3 extends AppCompatActivity {
                     // Get extra data included in the Intent
                     double message = intent.getDoubleExtra("amount", 1);
                     etAmount = view.findViewById(R.id.etAmount);
-                    etAmount.setText("" + message);
+                    etAmount.setText(String.format("%.2f", message));
                     updateRate();
 //                    etAmount.setText("200");
                 }
