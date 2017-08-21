@@ -147,7 +147,11 @@ public class MainActivity3 extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUITop(Context c) {
         setBottomRate();
-        double amount = currencyAmountBottom.getCurrency() * topRate;
+        setTopRate();
+        double amount = currencyAmountBottom.getCurrency() * bottomRate;
+        Log.i("updateUITop",currencyVariableTypeTop.getCurrency().toString());
+        Log.i("updateUITop",currencyVariableTypeBottom.getCurrency().toString());
+        Log.i("updateUITop", String.valueOf(bottomRate));
         currencyAmountTop.setCurrency(amount);
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(TAG);
@@ -158,11 +162,14 @@ public class MainActivity3 extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUIBottom(Context c) {
-        double amount = currencyAmountTop.getCurrency() * bottomRate;
+        setBottomRate();
+        setTopRate();
+        Log.i("updateUIBottom",currencyVariableTypeTop.getCurrency().toString());
+        Log.i("updateUIBottom",currencyVariableTypeBottom.getCurrency().toString());
+        double amount = currencyAmountTop.getCurrency() * topRate;
+        Log.i("updateUIBottom", String.valueOf(topRate));
         currencyAmountBottom.setCurrency(amount);
-        Log.i("Amount", String.valueOf(amount));
 
-        Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(TAG2);
         // You can also include some extra data.
         intent.putExtra("amount", amount);
@@ -396,7 +403,6 @@ public class MainActivity3 extends AppCompatActivity {
                 public void onReceive(Context context, Intent intent) {
                     // Get extra data included in the Intent
                     double message = intent.getDoubleExtra("amount", 0);
-                    Log.d("receiver", "Got message: " + message);
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText("" + message);
                 }
@@ -518,7 +524,7 @@ public class MainActivity3 extends AppCompatActivity {
             etAmount = rootView.findViewById(R.id.etAmount);
 
             indicator = rootView.findViewById(R.id.indicator);
-
+            String currency = getArguments().getString(ARG_SECTION_NUMBER);
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             this.view = rootView;
             return rootView;
@@ -588,7 +594,6 @@ public class MainActivity3 extends AppCompatActivity {
                 public void onReceive(Context context, Intent intent) {
                     // Get extra data included in the Intent
                     double message = intent.getDoubleExtra("amount", 1);
-                    Log.d("receiver", "Got message2: " + message);
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
 //                    etAmount.setText("200");
@@ -619,7 +624,6 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            currencyVariableTypeTop.setCurrency(CURRENCIES.getCURRENCIES(position));
             currencyAmountTop = new CurrencyAmount();
             currencyAmountBottom = new CurrencyAmount();
             return PlaceholderFragmentTop.newInstance(CURRENCIES.getCURRENCIES(position).toString());
@@ -642,7 +646,6 @@ public class MainActivity3 extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            currencyVariableTypeBottom.setCurrency(CURRENCIES.getCURRENCIES(position));
             currencyAmountTop = new CurrencyAmount();
             currencyAmountBottom = new CurrencyAmount();
 
