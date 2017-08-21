@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
     public final static String TAG = "updateUITop";
     public final static String TAG2 = "updateUIBottom";
     public final static String TAG3 = "updateRate";
-    static Context context;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -76,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
     private static Rates usdRates;
     private static Rates eurRates;
     private static Rates gbpRates;
-    CurrencyVariableType.ChangeListener listenerBottom;
     Interactor interactor = new InteractorImpl();
     private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
 
@@ -174,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("updateUITop", String.valueOf(bottomRate));
         currencyAmountTop.setCurrency(amount);
         Log.d("sender", "Broadcasting message");
+
         Intent intent = new Intent(TAG);
         // You can also include some extra data.
         intent.putExtra("amount", amount);
@@ -200,9 +199,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        context = getApplicationContext();
-
         setCurrencyRates();
 
         // Create the adapter that will return a fragment for each of the three
@@ -217,13 +213,6 @@ public class MainActivity extends AppCompatActivity {
         currencyAmountTop = new CurrencyAmount();
         currencyAmountBottom = new CurrencyAmount();
 
-
-        listenerBottom = new CurrencyVariableType.ChangeListener() {
-            @Override
-            public void onChange() {
-
-            }
-        };
 
         currencyAmountTop.setCurrency(0.0);
         currencyAmountBottom.setCurrency(0.0);
@@ -308,6 +297,10 @@ public class MainActivity extends AppCompatActivity {
                     public void accept(@NonNull Timed<Long> longTimed) throws Exception {
                         //your code here.
                         setCurrencyRates();
+                        Log.d("sender", "Broadcasting message");
+                        Intent intent = new Intent(TAG3);
+                        // You can also include some extra data.
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                         Log.i("setCurrencyRates", "setCurrencyRates");
                         setTopRate(getApplicationContext());
                         setBottomRate(getApplicationContext());
@@ -332,16 +325,16 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(MainActivity.this::onSuccessUSD, MainActivity.this::OnError);
     }
 
-    private void onSuccessGBP(Rates rates) {
-        this.gbpRates = rates;
+    private void onSuccessGBP(Rates newRates) {
+        gbpRates = newRates;
     }
 
-    private void onSuccessEUR(Rates rates) {
-        this.eurRates = rates;
+    private void onSuccessEUR(Rates newRates) {
+        eurRates = newRates;
     }
 
-    private void onSuccessUSD(Rates rates) {
-        this.usdRates = rates;
+    private void onSuccessUSD(Rates newRates) {
+        usdRates = newRates;
     }
 
     private void OnError(Throwable throwable) {
@@ -383,17 +376,8 @@ public class MainActivity extends AppCompatActivity {
         private static TextView tvCurrency;
         private static TextView tvRate;
         CircleIndicator indicator;
-        private CurrencyVariableType.ChangeListener listenerTop;
 
         public PlaceholderFragmentTop() {
-        }
-
-        public static TextView getTvRate() {
-            return tvRate;
-        }
-
-        public static EditText getEtAmount() {
-            return etAmount;
         }
 
         /**
@@ -408,11 +392,6 @@ public class MainActivity extends AppCompatActivity {
             args.putString(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        public static void updateEdit(double amount) {
-            etAmount.setText("" + amount);
         }
 
         public static void updateRate() {
@@ -443,8 +422,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-
-            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG));
 
             BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
@@ -456,20 +434,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver2,
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver2,
                     new IntentFilter(TAG3));
 
             tvCurrency = view.findViewById(R.id.tvCurrency);
             tvRate = view.findViewById(R.id.tvRate);
             etAmount = view.findViewById(R.id.etAmount);
             indicator = view.findViewById(R.id.indicator);
-
             indicator.setViewPager(mViewPagerTop);
-
-            currencyAmountTop.setListener(listenerTop);
-
             updateRate();
-
 
             // Register to receive messages.
             // We are registering an observer (mMessageReceiver) to receive Intents
@@ -478,7 +451,6 @@ public class MainActivity extends AppCompatActivity {
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -492,9 +464,7 @@ public class MainActivity extends AppCompatActivity {
                     if (etAmount.getText().hashCode() != editable.hashCode()) {
                         try {
                             double d = Double.parseDouble(editable.toString());
-
                             currencyAmountTop.setCurrency(d);
-
                             setTopRate(getContext());
                             setBottomRate(getContext());
                             updateUIBottom(getContext());
@@ -502,7 +472,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.e("Error", exc.getMessage());
                         }
                     }
-
                 }
             });
         }
@@ -513,12 +482,8 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate = rootView.findViewById(R.id.tvRate);
-//            etAmount = rootView.findViewById(R.id.etAmount);
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
-
             indicator = rootView.findViewById(R.id.indicator);
-
-            Bundle args = getArguments();
             return rootView;
         }
     }
@@ -541,14 +506,6 @@ public class MainActivity extends AppCompatActivity {
         public PlaceholderFragmentBottom() {
         }
 
-        public static TextView getTvRate() {
-            return tvRate;
-        }
-
-        public static EditText getEtAmount() {
-            return etAmount;
-        }
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -564,24 +521,20 @@ public class MainActivity extends AppCompatActivity {
         public static void updateRate() {
             StringBuilder sb = new StringBuilder();
             sb.append(currencyVariableTypeBottom.getCurrency().toString());
-
             sb.append(" 1 = ");
             sb.append(topRate);
             sb.append(" ");
             sb.append(currencyVariableTypeTop.getCurrency().toString());
-
             tvRate.setText(sb.toString());
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
             View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate = rootView.findViewById(R.id.tvRate);
             etAmount = rootView.findViewById(R.id.etAmount);
-
             indicator = rootView.findViewById(R.id.indicator);
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             this.view = rootView;
@@ -601,15 +554,11 @@ public class MainActivity extends AppCompatActivity {
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                    double d = Double.parseDouble(charSequence.toString());
-//                    updateUITop(d);
-
                 }
 
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -618,14 +567,13 @@ public class MainActivity extends AppCompatActivity {
                     if (etAmount.getText().hashCode() != editable.hashCode()) {
                         try {
                             double d = Double.parseDouble(editable.toString());
-
                             setTopRate(getContext());
                             setBottomRate(getContext());
                             Log.i("currencyAmountBottom", String.valueOf(d));
                             currencyAmountBottom.setCurrency(d);
                             updateUITop(getContext());
                         } catch (NumberFormatException exc) {
-
+                            Log.e("Error", exc.getMessage());
                         }
                     }
                 }
@@ -638,7 +586,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 500);// 0.5 seconds delay
 
-
             // Our handler for received Intents. This will be called whenever an Intent
             // with an action named "custom-event-name" is broadcasted.
             BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -650,7 +597,6 @@ public class MainActivity extends AppCompatActivity {
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText(String.format("%.2f", message));
                     updateRate();
-//                    etAmount.setText("200");
                 }
             };
 
@@ -659,7 +605,6 @@ public class MainActivity extends AppCompatActivity {
             // with actions named "custom-event-name".
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG2));
-
             BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
@@ -668,12 +613,9 @@ public class MainActivity extends AppCompatActivity {
                     updateRate();
                 }
             };
-
-            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver2,
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver2,
                     new IntentFilter(TAG3));
         }
-
-
     }
 
     /**
@@ -714,7 +656,6 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             currencyAmountTop = new CurrencyAmount();
             currencyAmountBottom = new CurrencyAmount();
-
             return PlaceholderFragmentBottom.newInstance(CURRENCIES.getCURRENCIES(position).toString());
         }
 
