@@ -107,9 +107,9 @@ public class MainActivity3 extends AppCompatActivity {
                 break;
             case GBP:
                 topRate = rates.getRates().getGBP();
-
         }
-
+        PlaceholderFragmentBottom.updateRate();
+        PlaceholderFragmentTop.updateRate();
     }
 
     private static void setBottomRate() {
@@ -226,6 +226,7 @@ public class MainActivity3 extends AppCompatActivity {
                 currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
                 updateUIBottom(getApplicationContext());
+                PlaceholderFragmentBottom.updateRate();
             }
 
             @Override
@@ -253,6 +254,7 @@ public class MainActivity3 extends AppCompatActivity {
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
                 updateUIBottom(getApplicationContext());
                 updateUITop(getApplicationContext());
+                PlaceholderFragmentTop.updateRate();
 
 
 
@@ -394,9 +396,21 @@ public class MainActivity3 extends AppCompatActivity {
             etAmount.setText("" + amount);
         }
 
+        public static void updateRate(){
+            StringBuilder sb = new StringBuilder();
+            sb.append(currencyVariableTypeTop.getCurrency().toString());
+            sb.append(" 1 = " );
+            sb.append(bottomRate);
+            sb.append(" " );
+            sb.append(currencyVariableTypeBottom.getCurrency().toString());
+
+            tvRate.setText(sb.toString());
+        }
+
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
 
             BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
@@ -406,6 +420,7 @@ public class MainActivity3 extends AppCompatActivity {
                     double message = intent.getDoubleExtra("amount", 0);
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText("" + message);
+                    updateRate();
                 }
             };
 
@@ -420,6 +435,10 @@ public class MainActivity3 extends AppCompatActivity {
             indicator.setViewPager(mViewPagerTop);
 
             currencyAmountTop.setListener(listenerTop);
+
+            updateRate();
+
+
 
             // Register to receive messages.
             // We are registering an observer (mMessageReceiver) to receive Intents
@@ -536,6 +555,7 @@ public class MainActivity3 extends AppCompatActivity {
             tvRate = view.findViewById(R.id.tvRate);
             etAmount = view.findViewById(R.id.etAmount);
             indicator.setViewPager(mViewPagerBottom);
+            updateRate();
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -587,6 +607,7 @@ public class MainActivity3 extends AppCompatActivity {
                     double message = intent.getDoubleExtra("amount", 1);
                     etAmount = view.findViewById(R.id.etAmount);
                     etAmount.setText("" + message);
+                    updateRate();
 //                    etAmount.setText("200");
                 }
             };
@@ -596,6 +617,18 @@ public class MainActivity3 extends AppCompatActivity {
             // with actions named "custom-event-name".
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG2));
+        }
+
+        public static void updateRate() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(currencyVariableTypeBottom.getCurrency().toString());
+
+            sb.append(" 1 = " );
+            sb.append(topRate);
+            sb.append(" " );
+            sb.append(currencyVariableTypeTop.getCurrency().toString());
+
+            tvRate.setText(sb.toString());
         }
 
 
