@@ -48,6 +48,7 @@ public class MainActivity3 extends AppCompatActivity {
 
     public final static String TAG = "TAG";
     public final static String TAG2 = "TAG2";
+    public final static String TAG3 = "TAG3";
     static Context context;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -76,7 +77,7 @@ public class MainActivity3 extends AppCompatActivity {
     Interactor interactor = new InteractorImpl();
     private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
 
-    private static void setTopRate() {
+    private static void setTopRate(Context context) {
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
 
@@ -108,11 +109,13 @@ public class MainActivity3 extends AppCompatActivity {
             case GBP:
                 topRate = rates.getRates().getGBP();
         }
-        PlaceholderFragmentBottom.updateRate();
-        PlaceholderFragmentTop.updateRate();
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG3);
+        // You can also include some extra data.
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    private static void setBottomRate() {
+    private static void setBottomRate(Context context) {
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
         if (currencyTop.equals(currencyBottom)) {
@@ -142,12 +145,16 @@ public class MainActivity3 extends AppCompatActivity {
             case GBP:
                 bottomRate = rates.getRates().getGBP();
         }
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(TAG3);
+        // You can also include some extra data.
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUITop(Context c) {
-        setBottomRate();
-        setTopRate();
+        setBottomRate(c);
+        setTopRate(c);
         double amount = currencyAmountBottom.getCurrency() * bottomRate;
         Log.i("updateUITop",currencyVariableTypeTop.getCurrency().toString());
         Log.i("updateUITop",currencyVariableTypeBottom.getCurrency().toString());
@@ -162,8 +169,8 @@ public class MainActivity3 extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void updateUIBottom(Context c) {
-        setBottomRate();
-        setTopRate();
+        setBottomRate(c);
+        setTopRate(c);
         Log.i("updateUIBottom",currencyVariableTypeTop.getCurrency().toString());
         Log.i("updateUIBottom",currencyVariableTypeBottom.getCurrency().toString());
         double amount = currencyAmountTop.getCurrency() * topRate;
@@ -220,8 +227,8 @@ public class MainActivity3 extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPageSelected(int position) {
-                setTopRate();
-                setBottomRate();
+                setTopRate(getApplicationContext());
+                setBottomRate(getApplicationContext());
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
@@ -247,8 +254,8 @@ public class MainActivity3 extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPageSelected(int position) {
-                setTopRate();
-                setBottomRate();
+                setTopRate(getApplicationContext());
+                setBottomRate(getApplicationContext());
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
@@ -290,8 +297,8 @@ public class MainActivity3 extends AppCompatActivity {
                         //your code here.
                         setCurrencyRates();
                         Log.i("setCurrencyRates","setCurrencyRates");
-                        setTopRate();
-                        setBottomRate();
+                        setTopRate(getApplicationContext());
+                        setBottomRate(getApplicationContext());
                         updateUITop(getApplicationContext());
                         updateUIBottom(getApplicationContext());
                     }
@@ -424,8 +431,22 @@ public class MainActivity3 extends AppCompatActivity {
                 }
             };
 
+
+
             LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG));
+
+            BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Get extra data included in the Intent
+                    updateRate();
+                }
+            };
+
+            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver2,
+                    new IntentFilter(TAG3));
 
             tvCurrency = view.findViewById(R.id.tvCurrency);
             tvRate = view.findViewById(R.id.tvRate);
@@ -464,8 +485,8 @@ public class MainActivity3 extends AppCompatActivity {
 
                             currencyAmountTop.setCurrency(d);
 
-                            setTopRate();
-                            setBottomRate();
+                            setTopRate(getContext());
+                            setBottomRate(getContext());
                             updateUIBottom(getContext());
                         } catch (NumberFormatException exc) {
                             Log.e("Error",exc.getMessage());
@@ -577,8 +598,8 @@ public class MainActivity3 extends AppCompatActivity {
                         try {
                             double d = Double.parseDouble(editable.toString());
 
-                            setTopRate();
-                            setBottomRate();
+                            setTopRate(getContext());
+                            setBottomRate(getContext());
                             Log.i("currencyAmountBottom", String.valueOf(d));
                             currencyAmountBottom.setCurrency(d);
                             updateUITop(getContext());
@@ -617,6 +638,18 @@ public class MainActivity3 extends AppCompatActivity {
             // with actions named "custom-event-name".
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter(TAG2));
+
+            BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    // Get extra data included in the Intent
+                    updateRate();
+                }
+            };
+
+            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver2,
+                    new IntentFilter(TAG3));
         }
 
         public static void updateRate() {
