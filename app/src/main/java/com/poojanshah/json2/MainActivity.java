@@ -25,9 +25,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.poojanshah.json2.MVP.interactor.Interactor;
-import com.poojanshah.json2.MVP.interactor.InteractorImpl;
+import com.poojanshah.json2.interactor.Interactor;
+import com.poojanshah.json2.interactor.InteractorImpl;
 import com.poojanshah.json2.model.Rates;
+import com.poojanshah.json2.variables.CURRENCIES;
+import com.poojanshah.json2.variables.CurrencyAmount;
+import com.poojanshah.json2.variables.CurrencyVariableType;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,13 +45,13 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.schedulers.Timed;
 import me.relex.circleindicator.CircleIndicator;
 
-import static com.poojanshah.json2.CURRENCIES.getCURRENCIES;
+import static com.poojanshah.json2.variables.CURRENCIES.getCURRENCIES;
 
-public class MainActivity3 extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
-    public final static String TAG = "TAG";
-    public final static String TAG2 = "TAG2";
-    public final static String TAG3 = "TAG3";
+    public final static String TAG = "updateUITop";
+    public final static String TAG2 = "updateUIBottom";
+    public final static String TAG3 = "updateRate";
     static Context context;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -196,7 +199,7 @@ public class MainActivity3 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_main);
 
         context = getApplicationContext();
 
@@ -318,15 +321,15 @@ public class MainActivity3 extends AppCompatActivity {
         interactor.getGBP()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessGBP, MainActivity3.this::OnError);
+                .subscribe(MainActivity.this::onSuccessGBP, MainActivity.this::OnError);
         interactor.getEUR()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessEUR, MainActivity3.this::OnError);
+                .subscribe(MainActivity.this::onSuccessEUR, MainActivity.this::OnError);
         interactor.getUSD()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(MainActivity3.this::onSuccessUSD, MainActivity3.this::OnError);
+                .subscribe(MainActivity.this::onSuccessUSD, MainActivity.this::OnError);
     }
 
     private void onSuccessGBP(Rates rates) {
@@ -507,7 +510,7 @@ public class MainActivity3 extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate = rootView.findViewById(R.id.tvRate);
 //            etAmount = rootView.findViewById(R.id.etAmount);
@@ -574,7 +577,7 @@ public class MainActivity3 extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment_main_activity3, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_main_activity, container, false);
             tvCurrency = rootView.findViewById(R.id.tvCurrency);
             tvRate = rootView.findViewById(R.id.tvRate);
             etAmount = rootView.findViewById(R.id.etAmount);

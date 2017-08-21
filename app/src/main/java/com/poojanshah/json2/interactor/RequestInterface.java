@@ -1,5 +1,6 @@
-package com.poojanshah.json2;
+package com.poojanshah.json2.interactor;
 
+import com.poojanshah.json2.Consts;
 import com.poojanshah.json2.model.Rates;
 
 import io.reactivex.Observable;

@@ -1,4 +1,4 @@
-package com.poojanshah.json2;
+package com.poojanshah.json2.variables;
 
 /**
  * Created by shahp on 18/08/2017.

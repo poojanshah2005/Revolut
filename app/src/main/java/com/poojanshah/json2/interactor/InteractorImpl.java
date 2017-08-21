@@ -1,8 +1,7 @@
-package com.poojanshah.json2.MVP.interactor;
+package com.poojanshah.json2.interactor;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.poojanshah.json2.Consts;
-import com.poojanshah.json2.RequestInterface;
 import com.poojanshah.json2.model.Rates;
 
 import io.reactivex.Observable;

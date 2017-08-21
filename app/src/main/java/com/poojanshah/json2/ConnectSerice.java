@@ -1,6 +1,7 @@
 package com.poojanshah.json2;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.poojanshah.json2.interactor.RequestInterface;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
