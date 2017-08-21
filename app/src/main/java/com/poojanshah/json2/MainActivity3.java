@@ -78,36 +78,41 @@ public class MainActivity3 extends AppCompatActivity {
     private SectionsPagerAdapterBottom sectionsPagerAdapterBottom;
 
     private static void setTopRate(Context context) {
-        CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
-        CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
+        try {
+            CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
+            CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
 
-        if (currencyTop.equals(currencyBottom)) {
-            topRate = 1;
-            return;
-        }
-        Rates rates;
+            if (currencyTop.equals(currencyBottom)) {
+                topRate = 1;
+                return;
+            }
+            Rates rates;
 
-        switch (currencyTop) {
-            case EUR:
-                rates = eurRates;
-                break;
-            case USD:
-                rates = usdRates;
-                break;
-            default:
-                rates = gbpRates;
+            switch (currencyTop) {
+                case EUR:
+                    rates = eurRates;
+                    break;
+                case USD:
+                    rates = usdRates;
+                    break;
+                default:
+                    rates = gbpRates;
 
-        }
+            }
 
-        switch (currencyBottom) {
-            case EUR:
-                topRate = rates.getRates().getEUR();
-                break;
-            case USD:
-                topRate = rates.getRates().getUSD();
-                break;
-            case GBP:
-                topRate = rates.getRates().getGBP();
+            switch (currencyBottom) {
+                case EUR:
+                    topRate = rates.getRates().getEUR();
+                    break;
+                case USD:
+                    topRate = rates.getRates().getUSD();
+                    break;
+                case GBP:
+                    topRate = rates.getRates().getGBP();
+            }
+        } catch (NullPointerException exc) {
+            Log.e("Error", exc.getMessage());
+            bottomRate = 1;
         }
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(TAG3);
@@ -118,32 +123,37 @@ public class MainActivity3 extends AppCompatActivity {
     private static void setBottomRate(Context context) {
         CURRENCIES currencyBottom = currencyVariableTypeBottom.getCurrency();
         CURRENCIES currencyTop = currencyVariableTypeTop.getCurrency();
-        if (currencyTop.equals(currencyBottom)) {
+        try {
+            if (currencyTop.equals(currencyBottom)) {
+                bottomRate = 1;
+                return;
+            }
+            Rates rates;
+
+            switch (currencyBottom) {
+                case EUR:
+                    rates = eurRates;
+                    break;
+                case USD:
+                    rates = usdRates;
+                    break;
+                default:
+                    rates = gbpRates;
+            }
+
+            switch (currencyTop) {
+                case EUR:
+                    bottomRate = rates.getRates().getEUR();
+                    break;
+                case USD:
+                    bottomRate = rates.getRates().getUSD();
+                    break;
+                case GBP:
+                    bottomRate = rates.getRates().getGBP();
+            }
+        } catch (NullPointerException exc) {
+            Log.e("Error", exc.getMessage());
             bottomRate = 1;
-            return;
-        }
-        Rates rates;
-
-        switch (currencyBottom) {
-            case EUR:
-                rates = eurRates;
-                break;
-            case USD:
-                rates = usdRates;
-                break;
-            default:
-                rates = gbpRates;
-        }
-
-        switch (currencyTop) {
-            case EUR:
-                bottomRate = rates.getRates().getEUR();
-                break;
-            case USD:
-                bottomRate = rates.getRates().getUSD();
-                break;
-            case GBP:
-                bottomRate = rates.getRates().getGBP();
         }
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(TAG3);
@@ -156,8 +166,8 @@ public class MainActivity3 extends AppCompatActivity {
         setBottomRate(c);
         setTopRate(c);
         double amount = currencyAmountBottom.getCurrency() * bottomRate;
-        Log.i("updateUITop",currencyVariableTypeTop.getCurrency().toString());
-        Log.i("updateUITop",currencyVariableTypeBottom.getCurrency().toString());
+        Log.i("updateUITop", currencyVariableTypeTop.getCurrency().toString());
+        Log.i("updateUITop", currencyVariableTypeBottom.getCurrency().toString());
         Log.i("updateUITop", String.valueOf(bottomRate));
         currencyAmountTop.setCurrency(amount);
         Log.d("sender", "Broadcasting message");
@@ -171,8 +181,8 @@ public class MainActivity3 extends AppCompatActivity {
     public static void updateUIBottom(Context c) {
         setBottomRate(c);
         setTopRate(c);
-        Log.i("updateUIBottom",currencyVariableTypeTop.getCurrency().toString());
-        Log.i("updateUIBottom",currencyVariableTypeBottom.getCurrency().toString());
+        Log.i("updateUIBottom", currencyVariableTypeTop.getCurrency().toString());
+        Log.i("updateUIBottom", currencyVariableTypeBottom.getCurrency().toString());
         double amount = currencyAmountTop.getCurrency() * topRate;
         Log.i("updateUIBottom", String.valueOf(topRate));
         currencyAmountBottom.setCurrency(amount);
@@ -264,7 +274,6 @@ public class MainActivity3 extends AppCompatActivity {
                 PlaceholderFragmentTop.updateRate();
 
 
-
                 Log.i("RateT", String.valueOf(topRate));
                 Log.i("RateB", String.valueOf(bottomRate));
 
@@ -296,7 +305,7 @@ public class MainActivity3 extends AppCompatActivity {
                     public void accept(@NonNull Timed<Long> longTimed) throws Exception {
                         //your code here.
                         setCurrencyRates();
-                        Log.i("setCurrencyRates","setCurrencyRates");
+                        Log.i("setCurrencyRates", "setCurrencyRates");
                         setTopRate(getApplicationContext());
                         setBottomRate(getApplicationContext());
                         updateUITop(getApplicationContext());
@@ -403,12 +412,12 @@ public class MainActivity3 extends AppCompatActivity {
             etAmount.setText("" + amount);
         }
 
-        public static void updateRate(){
+        public static void updateRate() {
             StringBuilder sb = new StringBuilder();
             sb.append(currencyVariableTypeTop.getCurrency().toString());
-            sb.append(" 1 = " );
+            sb.append(" 1 = ");
             sb.append(bottomRate);
-            sb.append(" " );
+            sb.append(" ");
             sb.append(currencyVariableTypeBottom.getCurrency().toString());
 
             tvRate.setText(sb.toString());
@@ -430,7 +439,6 @@ public class MainActivity3 extends AppCompatActivity {
                     updateRate();
                 }
             };
-
 
 
             LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
@@ -458,7 +466,6 @@ public class MainActivity3 extends AppCompatActivity {
             currencyAmountTop.setListener(listenerTop);
 
             updateRate();
-
 
 
             // Register to receive messages.
@@ -489,7 +496,7 @@ public class MainActivity3 extends AppCompatActivity {
                             setBottomRate(getContext());
                             updateUIBottom(getContext());
                         } catch (NumberFormatException exc) {
-                            Log.e("Error",exc.getMessage());
+                            Log.e("Error", exc.getMessage());
                         }
                     }
 
@@ -551,6 +558,18 @@ public class MainActivity3 extends AppCompatActivity {
             return fragment;
         }
 
+        public static void updateRate() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(currencyVariableTypeBottom.getCurrency().toString());
+
+            sb.append(" 1 = ");
+            sb.append(topRate);
+            sb.append(" ");
+            sb.append(currencyVariableTypeTop.getCurrency().toString());
+
+            tvRate.setText(sb.toString());
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -565,7 +584,6 @@ public class MainActivity3 extends AppCompatActivity {
             this.view = rootView;
             return rootView;
         }
-
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
@@ -650,18 +668,6 @@ public class MainActivity3 extends AppCompatActivity {
 
             LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver2,
                     new IntentFilter(TAG3));
-        }
-
-        public static void updateRate() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(currencyVariableTypeBottom.getCurrency().toString());
-
-            sb.append(" 1 = " );
-            sb.append(topRate);
-            sb.append(" " );
-            sb.append(currencyVariableTypeTop.getCurrency().toString());
-
-            tvRate.setText(sb.toString());
         }
 
 
