@@ -220,17 +220,17 @@ public class MainActivity3 extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPageSelected(int position) {
+                setTopRate();
+                setBottomRate();
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeTop.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedTV", String.valueOf(currencyVariableTypeTop.getCurrency().getValue()));
-                currencyAmountTop.setCurrency(0.0);
-                currencyAmountBottom.setCurrency(0.0);
                 updateUIBottom(getApplicationContext());
-                updateUITop(getApplicationContext());
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.i("onPageScrollTop", String.valueOf(state));
             }
         });
 
@@ -246,23 +246,25 @@ public class MainActivity3 extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onPageSelected(int position) {
+                setTopRate();
+                setBottomRate();
                 Log.i("onPageSelectedB", String.valueOf(getCURRENCIES(position)));
                 currencyVariableTypeBottom.setCurrency(getCURRENCIES(position));
                 Log.i("onPageSelectedBV", String.valueOf(currencyVariableTypeBottom.getCurrency().getValue()));
-                currencyAmountTop.setCurrency(0.0);
-                currencyAmountBottom.setCurrency(0.0);
                 updateUIBottom(getApplicationContext());
                 updateUITop(getApplicationContext());
 
-                setTopRate();
-                setBottomRate();
+
 
                 Log.i("RateT", String.valueOf(topRate));
                 Log.i("RateB", String.valueOf(bottomRate));
+
+                updateUITop(getApplicationContext());
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.i("onPageScrollBottom", String.valueOf(state));
             }
         });
 
@@ -292,7 +294,6 @@ public class MainActivity3 extends AppCompatActivity {
                         updateUIBottom(getApplicationContext());
                     }
                 });
-
     }
 
     public void setCurrencyRates() {
@@ -418,10 +419,6 @@ public class MainActivity3 extends AppCompatActivity {
 
             indicator.setViewPager(mViewPagerTop);
 
-
-            etAmount.setText("");
-
-
             currencyAmountTop.setListener(listenerTop);
 
             // Register to receive messages.
@@ -524,7 +521,6 @@ public class MainActivity3 extends AppCompatActivity {
             etAmount = rootView.findViewById(R.id.etAmount);
 
             indicator = rootView.findViewById(R.id.indicator);
-            String currency = getArguments().getString(ARG_SECTION_NUMBER);
             tvCurrency.setText(getArguments().getString(ARG_SECTION_NUMBER));
             this.view = rootView;
             return rootView;
@@ -540,11 +536,6 @@ public class MainActivity3 extends AppCompatActivity {
             tvRate = view.findViewById(R.id.tvRate);
             etAmount = view.findViewById(R.id.etAmount);
             indicator.setViewPager(mViewPagerBottom);
-
-
-            etAmount.setText("");
-
-
             etAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -595,7 +586,7 @@ public class MainActivity3 extends AppCompatActivity {
                     // Get extra data included in the Intent
                     double message = intent.getDoubleExtra("amount", 1);
                     etAmount = view.findViewById(R.id.etAmount);
-                    etAmount.setText(Integer.toString(Math.toIntExact((long) message)));
+                    etAmount.setText("" + message);
 //                    etAmount.setText("200");
                 }
             };
