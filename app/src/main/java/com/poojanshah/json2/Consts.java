@@ -12,4 +12,8 @@ public class Consts {
     public static final String GBP ="latest?base=GBP";
     public static final String EUR ="latest?base=EUR";
 
+    public final static String TAG = "updateUITop";
+    public final static String TAG2 = "updateUIBottom";
+    public final static String TAG3 = "updateRate";
+
 }
